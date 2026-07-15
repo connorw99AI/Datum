@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Datum</title>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAJDUExURfv6+v///9jY2FhYWBEQEAAAABAQEFdXV/v7+7i4uAwMDLm4udbW1hISEgMDAwABAAEBANfW1lxcXAQDAwIDAAICABUVFQECAAoOAQwPAQECAQICAgoNAUBUCnWZEpjGGKbYG6/lG3WXHBMSGxESEQQEBAEBAUddC5/QGcX+IMD5H6ndHJfEGpvLGGqIHR8dJykqKiMkJRQUFQEAAAkMAXecE8P+ILLoHmuMEiw5BwwQAgAAAQYGBhEREiAhIigpKh4fIAYIAYSsFcX/IIy3Fx4nBRYWFycnKSEhIwUFBX6lFQYJARISEycoKR0eHzA/CLvzH5fGGQwRAhgYGRESEoGoFb/5HzpMCQMEAAQEBSIjJCEiIxskBLTqHZG+GBUVFg0NDkNXC1t4DwoKCigoKhYXGF99EMT/ITlLCSQlJhwdHm2NE8D6ICo4Bh8fIWiIEsD7IC48ByMjJQMDAFNsDsX/IUVbCyUmJxobHDA+CHKWEw4ODxITEwgLAZ/PGqreHBUcAxscHSYnKAgICFl0D2iJEQ0ODRsbHAsOApnIGrv0H0RZCwUIABUUGgcICCs5B7HnHrTsHklhDAoNAp7PGEthEAQBDTZHCa/jHb75H3qgFCItBREXAmKAD0NaCyMuBo+6F7jwHomzF116D0ZcC0NYC1VwDnyiFKzhHMv/IZvLGgUGAUVZC424F7buHsb+Ibz1IJvKGlp3DxAVAxsjBDpMCktjDU1lDj9TCyMvBgUHAVxbXNfX1xMSEhMTE9nY2BERERjKNasAAAABYktHRAH/Ai3eAAAAB3RJTUUH6gcPCTEqg3+r6QAAAeFJREFUOMtjYGBkYmZhxQrY2JkYORgYOblYcQIubkYGHl5WPiQhfgEkDh8rryCDEKswXFJEFM0EYVYhBjE4TwSIxSUkpVCUiDFIQ1kCoqwysnLyCopKyiqqCAXSDGpQeQF+dQ1NLW0dXT19A0MjmDZWYwaoPKuJqZm5haWVAKu1ja2dvYMNTAVUAaujk7OLKys/yKlAc93cPTxRFIizWjh7ebOKiPBDhX18/dSQFIiy+gcEBoG9AQPB9iFICgRYQ8PCWSOQvRcZFS0NVyDAGhMbh6wdBOLtE+AKRFgTnZNY0VQkp6QiKUhLz0BXoJqZhaQgOyeXFS0epKPykBTkFxRiKChygCsoZi0pLUO3wqa8Aq5AlLUypwrdhGr7GqSQrK2rb2AVQFHQ2NSMUCDC2lLaihpQbb7tKJHV0dnVzRoBtUVARKCn170PNbL6J0ycBJQqFhEpFmdlnTxl6jQBFBNEWafPmDlrNoQzZ25a2jyYo2HpQYR1/gKzhYsWL1m6bPmKlasi4E5mgDFEWVevWbsuff360g0bN22Ge9oYnmhZxQVYBbZs3bZ9x85dyAGKlOxZ4elJBBEkYsgZB2iKCBCII/jCrLsZ9uxFyXoogI913x7CmZeDcT8zG3bpA8zA7A8AZUVmciMRN+sAAAAASUVORK5CYII=" />
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
@@ -13,8 +15,15 @@ body { font-family: 'Inter', -apple-system, sans-serif; }
 button, input { font-family: inherit; }
 button { cursor: pointer; border: none; background: none; }
 
-.app-shell { width: 100%; max-width: 28rem; margin: 0 auto; height: 100vh; max-height: 800px; background: #000; display: flex; flex-direction: column; border-radius: 1.5rem; overflow: hidden; border: 1px solid #27272a; }
-.app-body { flex: 1 1 0%; overflow-y: auto; padding: 1rem 1.25rem; }
+.app-shell { width: 100%; max-width: 28rem; margin: 0 auto; height: 100vh; height: 100dvh; max-height: 800px; background: #000; display: flex; flex-direction: column; border-radius: 1.5rem; overflow: hidden; border: 1px solid #27272a; }
+.app-body { flex: 1 1 0%; overflow-y: auto; padding: 1rem 1.25rem; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 480px), (max-height: 700px) {
+  html, body { overflow: hidden; }
+  .app-shell { max-width: 100%; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; border: none; }
+  .header { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
+  .tabbar { padding-bottom: env(safe-area-inset-bottom); }
+}
 
 .header { padding: 1.5rem 1.25rem 0.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
 .brand { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; color: #a3e635; font-weight: 700; text-transform: uppercase; }
@@ -66,6 +75,7 @@ button { cursor: pointer; border: none; background: none; }
 .scan-box { text-align: center; padding: 1rem 0; }
 .scanning-text { color: #a3e635; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; letter-spacing: 0.1em; }
 .scan-btn { width: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 0.75rem; padding: 0.875rem; margin-bottom: 0.625rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #fff; font-weight: 600; font-size: 0.875rem; }
+.computed-box { background: #27272a; border: 1px solid #3f3f46; border-radius: 0.75rem; padding: 0.75rem; margin-top: 0.5rem; margin-bottom: 0.75rem; }
 
 .field-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 600; }
 .field-input { width: 100%; background: #fff; border: 2px solid #d4d4d8; border-radius: 0.75rem; padding: 0.625rem 0.75rem; font-size: 1rem; color: #000; font-weight: 500; outline: none; margin-top: 0.25rem; }
@@ -131,10 +141,6 @@ button { cursor: pointer; border: none; background: none; }
   };
 </script>
 <script>
-  // Try several CDNs in sequence for React + ReactDOM, since some
-  // networks/firewalls block specific hosts (e.g. unpkg.com) but not
-  // others. Only calls initDatumApp() once both libraries are
-  // confirmed loaded; shows a clear message if every source fails.
   var CDN_SOURCES = [
     { react: "https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
       reactDom: "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
@@ -369,41 +375,64 @@ function EditGoalsForm(props) {
   );
 }
 
-// ---------- Food entry: quick-add / manual / scan ----------
+// ---------- Food entry: quick-add / manual (total or per-100g) / scan ----------
 function AddFoodFlow(props) {
   var knownFoods = props.knownFoods;
   var sMeal = useState(null), meal = sMeal[0], setMeal = sMeal[1];
   var sMode = useState(knownFoods.length ? "Quick add" : "Manual"), mode = sMode[0], setMode = sMode[1];
+  var sEntryMode = useState("Total"), entryMode = sEntryMode[0], setEntryMode = sEntryMode[1]; // "Total" | "Per 100g"
   var sName = useState(""), name = sName[0], setName = sName[1];
   var sCal = useState(""), calories = sCal[0], setCalories = sCal[1];
   var sPro = useState(""), protein = sPro[0], setProtein = sPro[1];
   var sCarb = useState(""), carbs = sCarb[0], setCarbs = sCarb[1];
   var sSugar = useState(""), sugar = sSugar[0], setSugar = sSugar[1];
   var sFat = useState(""), fat = sFat[0], setFat = sFat[1];
+  var sWeight = useState(""), foodWeight = sWeight[0], setFoodWeight = sWeight[1];
   var sScan = useState("idle"), scanStep = sScan[0], setScanStep = sScan[1];
 
   function fillFrom(food) {
     setName(food.name); setCalories(String(food.calories)); setProtein(String(food.protein));
     setCarbs(String(food.carbs)); setSugar(String(food.sugar)); setFat(String(food.fat));
-    setMode("Manual");
+    setMode("Manual"); setEntryMode("Total");
   }
+
+  function perGram(v) { return (parseFloat(v) || 0) / 100; }
+  var weightNum = parseFloat(foodWeight) || 0;
+  var computed = entryMode === "Per 100g" ? {
+    calories: Math.round(perGram(calories) * weightNum),
+    protein: Math.round(perGram(protein) * weightNum * 10) / 10,
+    carbs: Math.round(perGram(carbs) * weightNum * 10) / 10,
+    sugar: Math.round(perGram(sugar) * weightNum * 10) / 10,
+    fat: Math.round(perGram(fat) * weightNum * 10) / 10
+  } : null;
+
   function submit() {
-    if (!name.trim() || !calories) return;
-    props.onAdd(meal, {
-      name: name.trim(),
-      calories: parseFloat(calories) || 0,
-      protein: parseFloat(protein) || 0,
-      carbs: parseFloat(carbs) || 0,
-      sugar: parseFloat(sugar) || 0,
-      fat: parseFloat(fat) || 0
-    });
+    if (!name.trim()) return;
+    if (entryMode === "Per 100g") {
+      if (!calories || !weightNum) return;
+      props.onAdd(meal, {
+        name: name.trim() + " (" + weightNum + "g)",
+        calories: computed.calories, protein: computed.protein,
+        carbs: computed.carbs, sugar: computed.sugar, fat: computed.fat
+      });
+    } else {
+      if (!calories) return;
+      props.onAdd(meal, {
+        name: name.trim(),
+        calories: parseFloat(calories) || 0,
+        protein: parseFloat(protein) || 0,
+        carbs: parseFloat(carbs) || 0,
+        sugar: parseFloat(sugar) || 0,
+        fat: parseFloat(fat) || 0
+      });
+    }
   }
   function mockScan(kind) {
     setScanStep("scanning");
     setTimeout(function () {
       setName(kind === "barcode" ? "Scanned product" : "Label scan result");
       setCalories("210"); setProtein("9"); setCarbs("27"); setSugar("11"); setFat("7");
-      setScanStep("idle"); setMode("Manual");
+      setScanStep("idle"); setMode("Manual"); setEntryMode("Total");
     }, 900);
   }
 
@@ -443,14 +472,37 @@ function AddFoodFlow(props) {
 
     mode === "Manual" ? h("div", null,
       h(Field, { label: "Food name", value: name, onChange: function (e) { setName(e.target.value); }, placeholder: "e.g. Grilled chicken" }),
-      h("div", { className: "grid-2" },
-        h(Field, { label: "Calories", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Protein (g)", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Carbs (g)", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Sugar (g)", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+      h(Segmented, { options: ["Total", "Per 100g"], value: entryMode, onChange: setEntryMode }),
+
+      entryMode === "Total" ? h("div", null,
+        h("div", { className: "grid-2" },
+          h(Field, { label: "Calories", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Protein (g)", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Carbs (g)", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Sugar (g)", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+        ),
+        h(Field, { label: "Fat (g)", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+      ) : h("div", null,
+        h("p", { className: "hint mb-2" }, "Enter the nutrition label's per-100g values, then the actual weight you're eating — the totals below are calculated automatically."),
+        h("div", { className: "grid-2" },
+          h(Field, { label: "Calories / 100g", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Protein / 100g", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Carbs / 100g", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Sugar / 100g", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+        ),
+        h(Field, { label: "Fat / 100g", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Weight eaten (g)", value: foodWeight, onChange: function (e) { setFoodWeight(e.target.value); }, placeholder: "e.g. 300", inputMode: "decimal" }),
+        computed ? h("div", { className: "computed-box" },
+          h("div", { className: "label-sm mb-1" }, "Calculated totals for " + (weightNum || 0) + "g"),
+          h("div", { className: "hint" }, computed.calories + " cal · P " + computed.protein + "g · C " + computed.carbs + "g · Sugar " + computed.sugar + "g · F " + computed.fat + "g")
+        ) : null
       ),
-      h(Field, { label: "Fat (g)", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-      h("button", { onClick: submit, disabled: !name.trim() || !calories, className: "btn-primary mt-2" }, Icon("✎", 16), " Add food")
+
+      h("button", {
+        onClick: submit,
+        disabled: entryMode === "Total" ? (!name.trim() || !calories) : (!name.trim() || !calories || !weightNum),
+        className: "btn-primary mt-2"
+      }, Icon("✎", 16), " Add food")
     ) : null
   );
 }
@@ -589,6 +641,8 @@ function Datum() {
   var sFoodModal = useState(false), foodModalOpen = sFoodModal[0], setFoodModalOpen = sFoodModal[1];
   var sWorkoutModal = useState(false), workoutModal = sWorkoutModal[0], setWorkoutModal = sWorkoutModal[1];
   var sWeightInput = useState(""), weightInput = sWeightInput[0], setWeightInput = sWeightInput[1];
+  var sImportMsg = useState(""), importMessage = sImportMsg[0], setImportMessage = sImportMsg[1];
+  var fileInputRef = useRef(null);
 
   useEffect(function () { saveKey("foodEntries", foodEntries); }, [foodEntries]);
   useEffect(function () { saveKey("workouts", workouts); }, [workouts]);
@@ -695,6 +749,48 @@ function Datum() {
     setWeightInput("");
   }
 
+  function exportData() {
+    var payload = {
+      exportedAt: new Date().toISOString(),
+      app: "Datum",
+      version: 1,
+      foodEntries: foodEntries, workouts: workouts, weights: weights,
+      weeklySummaries: weeklySummaries, monthlySummaries: monthlySummaries,
+      goals: goals, unit: unit
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "datum-export-" + dateKey() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importData(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data || typeof data !== "object") throw new Error("not an object");
+        if (Array.isArray(data.foodEntries)) setFoodEntries(data.foodEntries);
+        if (Array.isArray(data.workouts)) setWorkouts(data.workouts);
+        if (Array.isArray(data.weights)) setWeights(data.weights);
+        if (Array.isArray(data.weeklySummaries)) setWeeklySummaries(data.weeklySummaries);
+        if (Array.isArray(data.monthlySummaries)) setMonthlySummaries(data.monthlySummaries);
+        if (data.goals && typeof data.goals === "object") setGoals(data.goals);
+        if (typeof data.unit === "string") setUnit(data.unit);
+        setImportMessage("Import successful.");
+      } catch (e) {
+        setImportMessage("Import failed: the file isn't a valid Datum export.");
+      }
+    };
+    reader.onerror = function () { setImportMessage("Import failed: couldn't read the file."); };
+    reader.readAsText(file);
+  }
+
   var headerLogo = h("svg", { width: 14, height: 14, viewBox: "0 0 64 64" },
     h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#27272a", strokeWidth: 10 }),
     h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#a3e635", strokeWidth: 10, strokeDasharray: 2 * Math.PI * 26, strokeDashoffset: 2 * Math.PI * 26 * 0.3, strokeLinecap: "round", transform: "rotate(-90 32 32)" })
@@ -720,7 +816,19 @@ function Datum() {
     ),
     h(GoalCard, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg, sessionsThisWeek: sessionsThisWeek, onEdit: function () { setGoalModalOpen(true); } }),
     h("div", { className: "card mb-4" },
-      h("div", { className: "row-between mb-3" }, h("span", { className: "card-title" }, "Today's workout")),
+      h("div", { className: "row-between mb-3" },
+        h("span", { className: "card-title" }, "Nutrition")
+      ),
+      h(MacroBar, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
+      h(MacroBar, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
+      h(MacroBar, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
+      h(MacroBar, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" }),
+      h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mt-1" }, Icon("➕", 16), " Log food")
+    ),
+    h("div", { className: "card mb-4" },
+      h("div", { className: "row-between mb-3" },
+        h("span", { className: "card-title" }, "Today's workout")
+      ),
       todaysWorkouts.length === 0
         ? h("p", { className: "hint mb-3" }, "No workout logged today.")
         : h("div", { className: "mb-3" }, todaysWorkouts.map(function (w) {
@@ -730,17 +838,6 @@ function Datum() {
             );
           })),
       h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary" }, Icon("➕", 16), " Log workout")
-    ),
-    h("div", { className: "card mb-4" },
-      h("div", { className: "row-between mb-3" },
-        h("span", { className: "card-title" }, "Nutrition"),
-        h("span", { className: "value-mono" }, Math.round(totals.calories) + " cal today")
-      ),
-      h(MacroBar, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
-      h(MacroBar, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
-      h(MacroBar, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
-      h(MacroBar, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" }),
-      h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mt-1" }, Icon("➕", 16), " Log food")
     )
   );
 
@@ -825,7 +922,24 @@ function Datum() {
     settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
       h("div", { className: "label-sm mb-2" }, "Weight unit"),
       h(Segmented, { options: ["kg", "lbs"], value: unit, onChange: setUnit }),
-      h("p", { className: "hint" }, "Existing entries convert automatically."),
+      h("p", { className: "hint mb-4" }, "Existing entries convert automatically."),
+
+      h("div", { className: "label-sm mb-2" }, "Your data"),
+      h("button", { onClick: exportData, className: "list-btn" }, Icon("⬇️", 15), "  Export all data (.json)"),
+      h("button", {
+        onClick: function () { fileInputRef.current && fileInputRef.current.click(); },
+        className: "list-btn"
+      }, Icon("⬆️", 15), "  Import data from file"),
+      h("input", {
+        type: "file", accept: "application/json,.json", ref: fileInputRef, style: { display: "none" },
+        onChange: function (e) {
+          var file = e.target.files && e.target.files[0];
+          if (file) importData(file);
+          e.target.value = "";
+        }
+      }),
+      importMessage ? h("p", { className: "hint", style: { color: importMessage.indexOf("failed") >= 0 ? "#f87171" : "#a3e635" } }, importMessage) : null,
+
       !useRealStorage ? h("p", { className: "hint mt-2", style: { color: "#fb923c" } }, "Note: this preview can't access persistent storage here, so entries won't be saved between reloads. Once hosted in a real browser, your data will save normally.") : null
     ) : null
   );
@@ -837,7 +951,6 @@ var rootEl = document.getElementById("root");
 ReactDOM.createRoot(rootEl).render(h(Datum));
 
 }
-
 </script>
 <script>
   tryLoadFrom(0);

@@ -2,232 +2,405 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Datum — Calorie, Workout &amp; Weight Tracker</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%2327272a' stroke-width='10'/%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%23a3e635' stroke-width='10' stroke-dasharray='163.36' stroke-dashoffset='49' stroke-linecap='round' transform='rotate(-90 32 32)'/%3E%3C/svg%3E" />
-
-<!-- Tailwind (Play CDN — fine for a small personal-use static site) -->
-<script src="https://cdn.tailwindcss.com"></script>
-
-<!-- React + Babel (in-browser JSX transpile, no build step needed) -->
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Datum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap');
-  html, body { background:#000; margin:0; padding:0; }
-  .font-sans { font-family: 'Inter', -apple-system, sans-serif; }
-  .font-display { font-family: 'Archivo Black', 'Inter', sans-serif; }
-  .font-mono { font-family: 'JetBrains Mono', monospace; }
-  #root { display:flex; justify-content:center; align-items:center; min-height:100vh; padding: 12px; box-sizing: border-box; }
+* { box-sizing: border-box; }
+html, body { background: #000; margin: 0; height: 100%; }
+body { font-family: 'Inter', -apple-system, sans-serif; }
+button, input { font-family: inherit; }
+button { cursor: pointer; border: none; background: none; }
+
+.app-shell { width: 100%; max-width: 28rem; margin: 0 auto; height: 100vh; max-height: 800px; background: #000; display: flex; flex-direction: column; border-radius: 1.5rem; overflow: hidden; border: 1px solid #27272a; }
+.app-body { flex: 1 1 0%; overflow-y: auto; padding: 1rem 1.25rem; }
+
+.header { padding: 1.5rem 1.25rem 0.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
+.brand { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; color: #a3e635; font-weight: 700; text-transform: uppercase; }
+.page-title { font-family: 'Archivo Black', 'Inter', sans-serif; font-size: 1.25rem; color: #fff; text-transform: uppercase; letter-spacing: -0.025em; }
+
+.row { display: flex; align-items: center; }
+.row-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-1-5 { gap: 0.375rem; }
+.gap-2 { gap: 0.5rem; }
+.mb-0-5 { margin-bottom: 0.125rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-5 { margin-top: 1.25rem; }
+
+.icon-btn { width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: #18181b; border: 1px solid #3f3f46; color: #e4e4e7; display: flex; align-items: center; justify-content: center; }
+
+.card { background: #18181b; border-radius: 1rem; padding: 1rem; border: 1px solid #27272a; }
+.card.center { text-align: center; }
+.card-title { font-weight: 700; color: #fff; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.025em; }
+.text-lime { color: #a3e635; }
+.text-orange { color: #fb923c; }
+
+.label-sm { font-size: 0.75rem; font-weight: 600; color: #d4d4d8; text-transform: uppercase; letter-spacing: 0.025em; }
+.value-mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a1a1aa; }
+.value-mono-bold { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; color: #fff; }
+.hint { font-size: 0.8125rem; color: #71717a; }
+.empty-state { text-align: center; color: #71717a; font-size: 0.875rem; margin-top: 2rem; margin-bottom: 1rem; }
+
+.btn-primary { width: 100%; background: #a3e635; color: #000; border-radius: 0.75rem; padding: 0.75rem; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.025em; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.btn-primary:disabled { background: #3f3f46; color: #71717a; }
+
+.list-btn { width: 100%; text-align: left; background: #27272a; border: 1px solid #3f3f46; border-radius: 0.75rem; padding: 0.875rem 1rem; margin-bottom: 0.5rem; color: #fff; font-weight: 600; }
+.back-link { color: #a3e635; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; display: inline-block; }
+
+.segmented { display: flex; background: #27272a; border-radius: 0.75rem; padding: 0.25rem; margin-bottom: 1rem; border: 1px solid #3f3f46; }
+.segmented-btn { flex: 1 1 0%; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 700; color: #d4d4d8; text-align: center; }
+.segmented-btn-active { background: #a3e635; color: #000; }
+
+.scroll-list { max-height: 18rem; overflow-y: auto; }
+.quick-item { width: 100%; text-align: left; padding: 0.625rem 0; border-top: 1px solid #27272a; }
+.quick-item:first-child { border-top: none; }
+.quick-item-title { font-size: 0.875rem; font-weight: 600; color: #fff; }
+.quick-item-sub { font-size: 0.75rem; color: #a1a1aa; }
+
+.scan-box { text-align: center; padding: 1rem 0; }
+.scanning-text { color: #a3e635; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; letter-spacing: 0.1em; }
+.scan-btn { width: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 0.75rem; padding: 0.875rem; margin-bottom: 0.625rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #fff; font-weight: 600; font-size: 0.875rem; }
+
+.field-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 600; }
+.field-input { width: 100%; background: #fff; border: 2px solid #d4d4d8; border-radius: 0.75rem; padding: 0.625rem 0.75rem; font-size: 1rem; color: #000; font-weight: 500; outline: none; margin-top: 0.25rem; }
+.field-input:focus { border-color: #84cc16; }
+.field-input::placeholder { color: #a1a1aa; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+.modal-box { background: #18181b; width: 100%; max-width: 28rem; border-radius: 1.5rem; max-height: 100%; overflow-y: auto; border: 1px solid #3f3f46; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.25rem 0.75rem; position: sticky; top: 0; background: #18181b; border-bottom: 1px solid #3f3f46; }
+.modal-title { font-weight: 700; font-size: 1.125rem; color: #fff; text-transform: uppercase; letter-spacing: 0.025em; margin: 0; }
+.modal-body { padding: 1.25rem; }
+
+.progress-track { height: 0.5rem; background: #27272a; border-radius: 9999px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 9999px; transition: width 0.2s ease; }
+
+.workout-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #27272a; }
+.workout-row:first-child { border-top: none; }
+.item-title { font-size: 0.875rem; color: #fff; font-weight: 500; }
+.item-title-bold { font-size: 0.875rem; color: #fff; font-weight: 700; }
+
+.food-row { display: flex; justify-content: space-between; padding: 0.625rem 0; border-top: 1px solid #27272a; }
+
+.counter-card { background: #18181b; border-radius: 1.5rem; padding: 1.5rem; text-align: center; margin-bottom: 1rem; border: 1px solid #27272a; }
+.counter-number { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 700; color: #a3e635; line-height: 1; }
+.counter-goal { font-size: 1.5rem; color: #71717a; }
+.counter-label { font-size: 0.75rem; color: #a1a1aa; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.big-number { font-family: 'JetBrains Mono', monospace; font-size: 2.25rem; font-weight: 700; color: #a3e635; }
+
+.stat-box { flex: 1 1 0%; background: #18181b; border-radius: 0.75rem; padding: 0.75rem; text-align: center; border: 1px solid #27272a; }
+.stat-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.125rem; color: #fff; }
+
+.weight-input { flex: 1 1 0%; background: #fff; border: 2px solid #d4d4d8; border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; color: #000; font-weight: 500; outline: none; }
+.weight-input:focus { border-color: #84cc16; }
+.weight-input::placeholder { color: #a1a1aa; }
+.log-btn { background: #a3e635; color: #000; border-radius: 0.75rem; padding: 0 1.25rem; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; }
+.weight-row { display: flex; justify-content: space-between; background: #18181b; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 0.375rem; border: 1px solid #27272a; }
+
+.tabbar { display: flex; border-top: 1px solid #27272a; background: #000; }
+.tab-btn { flex: 1 1 0%; padding: 0.75rem 0; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; color: #71717a; }
+.tab-btn-active { color: #a3e635; }
+.tab-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }
+
+.summary-item { background: #27272a; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.875rem; }
+.summary-title { color: #fff; font-weight: 600; margin-bottom: 0.25rem; }
+.summary-line { color: #a1a1aa; font-size: 0.75rem; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1.4s linear infinite; }
+
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root">
+  <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#71717a;font-family:monospace;font-size:13px;">Loading…</div>
+</div>
+<script>
+  window.onerror = function (msg, url, line, col, err) {
+    document.getElementById("root").innerHTML =
+      '<pre style="color:#f87171;background:#18181b;padding:20px;white-space:pre-wrap;font-family:monospace;font-size:12px;border-radius:12px;margin:16px;">' +
+      "Error: " + String(msg) + "\nLine " + line + ", Col " + col + "\n\n" + (err && err.stack ? err.stack : "") +
+      "</pre>";
+  };
+</script>
+<script>
+  // Try several CDNs in sequence for React + ReactDOM, since some
+  // networks/firewalls block specific hosts (e.g. unpkg.com) but not
+  // others. Only calls initDatumApp() once both libraries are
+  // confirmed loaded; shows a clear message if every source fails.
+  var CDN_SOURCES = [
+    { react: "https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
+      reactDom: "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
+      name: "cdnjs" },
+    { react: "https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js",
+      reactDom: "https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js",
+      name: "jsdelivr" },
+    { react: "https://unpkg.com/react@18/umd/react.production.min.js",
+      reactDom: "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
+      name: "unpkg" }
+  ];
 
-<script type="text/babel" data-presets="react">
-const { useState, useMemo, useEffect, useRef } = React;
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = src;
+      s.crossOrigin = "anonymous";
+      s.onload = resolve;
+      s.onerror = function () { reject(new Error("failed to load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
 
-// ---------- tiny inline icon set (no external icon library needed) ----------
-function Icon({ path, size = 18, ...props }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      {path}
-    </svg>
-  );
+  function tryLoadFrom(sourceIndex) {
+    if (sourceIndex >= CDN_SOURCES.length) {
+      document.getElementById("root").innerHTML =
+        '<pre style="color:#f87171;background:#18181b;padding:20px;white-space:pre-wrap;font-family:monospace;font-size:12px;border-radius:12px;margin:16px;">' +
+        "Couldn't load React from any CDN (tried cdnjs, jsdelivr, unpkg).\n\n" +
+        "This points to a network-level block on your connection rather than one specific site. Try switching networks (e.g. mobile data instead of wifi), disabling any content/ad/privacy blocker for this page, or opening this file once it's actually hosted online." +
+        "</pre>";
+      return;
+    }
+    var src = CDN_SOURCES[sourceIndex];
+    loadScript(src.react)
+      .then(function () { return loadScript(src.reactDom); })
+      .then(function () {
+        if (typeof React === "undefined" || typeof ReactDOM === "undefined") {
+          throw new Error("loaded but globals missing from " + src.name);
+        }
+        initDatumApp();
+      })
+      .catch(function () { tryLoadFrom(sourceIndex + 1); });
+  }
+</script>
+<script>
+function initDatumApp() {
+// ============================================================
+// Datum — plain JS (no JSX/Babel) React app.
+// Storage: uses real localStorage when available (e.g. hosted on
+// GitHub Pages); silently falls back to an in-memory store when
+// localStorage is blocked (e.g. inside a sandboxed preview), so
+// the app still works there for testing, it just won't persist
+// between reloads in that specific context.
+// ============================================================
+"use strict";
+
+var h = React.createElement;
+var useState = React.useState;
+var useMemo = React.useMemo;
+var useEffect = React.useEffect;
+var useRef = React.useRef;
+
+// ---------- storage ----------
+var STORAGE_PREFIX = "datum:";
+var memoryStore = {};
+var useRealStorage = true;
+try {
+  var testKey = "__datum_test__";
+  window.localStorage.setItem(testKey, "1");
+  window.localStorage.removeItem(testKey);
+} catch (e) {
+  useRealStorage = false;
 }
-const IconPlus = (p) => <Icon {...p} path={<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>} />;
-const IconHome = (p) => <Icon {...p} path={<><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><path d="M4 10v10a1 1 0 0 0 1 1h4M20 10v10a1 1 0 0 1-1 1h-4"/></>} />;
-const IconUtensils = (p) => <Icon {...p} path={<><path d="M3 2v7c0 1.1.9 2 2 2s2-.9 2-2V2M5 11v11M17 2v20M17 2c-2 0-4 2-4 6s2 6 4 6"/></>} />;
-const IconDumbbell = (p) => <Icon {...p} path={<><path d="M6.5 6.5l11 11M4 4l3 3M20 20l-3-3M2 8l4-4M18 18l4 4M9 15l-6-6M15 9l6 6"/></>} />;
-const IconScale = (p) => <Icon {...p} path={<><path d="M12 3v18M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0zM3 8h4M17 8h4M7 21h10"/></>} />;
-const IconSettings = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></>} />;
-const IconX = (p) => <Icon {...p} path={<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>} />;
-const IconCamera = (p) => <Icon {...p} path={<><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></>} />;
-const IconScanLine = (p) => <Icon {...p} path={<><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></>} />;
-const IconPen = (p) => <Icon {...p} path={<><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></>} />;
-const IconTarget = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>} />;
-const IconPencil = (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></>} />;
-const IconClock = (p) => <Icon {...p} path={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>} />;
-const IconChart = (p) => <Icon {...p} path={<><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>} />;
+function loadKey(key, fallback) {
+  try {
+    if (useRealStorage) {
+      var raw = window.localStorage.getItem(STORAGE_PREFIX + key);
+      return raw ? JSON.parse(raw) : fallback;
+    }
+    return Object.prototype.hasOwnProperty.call(memoryStore, key)
+      ? JSON.parse(JSON.stringify(memoryStore[key]))
+      : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+function saveKey(key, value) {
+  try {
+    if (useRealStorage) {
+      window.localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+    } else {
+      memoryStore[key] = value;
+    }
+  } catch (e) {}
+}
 
-// ---------- helpers ----------
-const uid = () => Math.random().toString(36).slice(2, 10);
-const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-const TABS = [
-  { key: "dashboard", label: "Today", icon: IconHome },
-  { key: "food", label: "Food", icon: IconUtensils },
-  { key: "workouts", label: "Train", icon: IconDumbbell },
-  { key: "weight", label: "Weight", icon: IconScale },
-];
-const KG_PER_LB = 0.453592;
-
+// ---------- date / unit helpers ----------
+var KG_PER_LB = 0.453592;
 function toKg(val, unit) { return unit === "kg" ? val : val * KG_PER_LB; }
 function fromKg(kg, unit) { return unit === "kg" ? kg : Math.round((kg / KG_PER_LB) * 10) / 10; }
-function dateKey(d = new Date()) {
-  const x = new Date(d);
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function dateKey(d) {
+  d = d || new Date();
+  var x = new Date(d);
   x.setMinutes(x.getMinutes() - x.getTimezoneOffset());
   return x.toISOString().slice(0, 10);
 }
-function startOfWeek(date = new Date()) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - d.getDay());
-  return d;
+function startOfWeek(d) {
+  d = d || new Date();
+  var x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  x.setDate(x.getDate() - x.getDay());
+  return x;
 }
-function weekKey(date = new Date()) { return dateKey(startOfWeek(date)); }
-function monthKey(date = new Date()) { return dateKey(date).slice(0, 7); }
-function isLastDayOfMonth(d = new Date()) {
-  const next = new Date(d);
+function weekKey(d) { return dateKey(startOfWeek(d)); }
+function monthKey(d) { return dateKey(d).slice(0, 7); }
+function isLastDayOfMonth(d) {
+  var next = new Date(d);
   next.setDate(next.getDate() + 1);
   return next.getDate() === 1;
 }
 
-const STORAGE_PREFIX = "datum:";
-async function loadKey(key, fallback) {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_PREFIX + key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch { return fallback; }
-}
-async function saveKey(key, value) {
-  try { window.localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)); } catch {}
+var MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
+
+// ---------- tiny icon helper (emoji, no icon library) ----------
+function Icon(glyph, size, className) {
+  return h("span", { style: { fontSize: size || 16, lineHeight: 1, display: "inline-flex" }, className: className || "" }, glyph);
 }
 
-// ---------- tiny dependency-free line chart ----------
-function MiniLineChart({ data, dataKey: dk, labelKey }) {
-  const width = 320, height = 170, pad = 28;
-  if (!data || data.length < 2) return null;
-  const values = data.map((d) => d[dk]);
-  const min = Math.min(...values), max = Math.max(...values);
-  const span = max - min || 1;
-  const stepX = (width - pad * 2) / (data.length - 1);
-  const points = data.map((d, i) => {
-    const x = pad + i * stepX;
-    const y = pad + (height - pad * 2) * (1 - (d[dk] - min) / span);
-    return [x, y];
+// ---------- shared UI ----------
+function Field(props) {
+  var label = props.label;
+  var inputProps = {};
+  for (var k in props) { if (k !== "label") inputProps[k] = props[k]; }
+  inputProps.className = "field-input";
+  return h("div", { className: "mb-3" },
+    h("label", { className: "field-label" }, label),
+    h("input", inputProps)
+  );
+}
+
+function Modal(props) {
+  return h("div", { className: "modal-backdrop", onClick: function (e) { if (e.target === e.currentTarget) props.onClose(); } },
+    h("div", { className: "modal-box" },
+      h("div", { className: "modal-header" },
+        h("h3", { className: "modal-title" }, props.title),
+        h("button", { onClick: props.onClose, className: "icon-btn" }, Icon("✕", 16))
+      ),
+      h("div", { className: "modal-body" }, props.children)
+    )
+  );
+}
+
+function Segmented(props) {
+  return h("div", { className: "segmented" },
+    props.options.map(function (opt) {
+      return h("button", {
+        key: opt,
+        onClick: function () { props.onChange(opt); },
+        className: "segmented-btn" + (props.value === opt ? " segmented-btn-active" : "")
+      }, opt);
+    })
+  );
+}
+
+function ProgressBar(props) {
+  var pct = Math.max(0, Math.min(100, props.pct));
+  return h("div", { className: "progress-track" },
+    h("div", { className: "progress-fill", style: { width: pct + "%", backgroundColor: props.color || "#a3e635" } })
+  );
+}
+
+function MacroBar(props) {
+  var pct = props.goal > 0 ? Math.min(100, (props.current / props.goal) * 100) : 0;
+  return h("div", { className: "mb-3" },
+    h("div", { className: "row-between mb-1" },
+      h("span", { className: "label-sm" }, props.label),
+      h("span", { className: "value-mono" }, Math.round(props.current) + " / " + props.goal + "g")
+    ),
+    h(ProgressBar, { pct: pct, color: props.color })
+  );
+}
+
+// ---------- simple hand-built SVG line chart ----------
+function SimpleLineChart(props) {
+  var data = props.data, dataKey = props.dataKey, labelKey = props.labelKey, height = props.height || 200;
+  var width = 320, padY = 20, padX = 8;
+  var values = data.map(function (d) { return d[dataKey]; });
+  var min = Math.min.apply(null, values);
+  var max = Math.max.apply(null, values);
+  var span = max - min || 1;
+  var stepX = (width - padX * 2) / Math.max(1, data.length - 1);
+  var points = data.map(function (d, i) {
+    return { x: padX + i * stepX, y: padY + (1 - (d[dataKey] - min) / span) * (height - padY * 2) };
   });
-  const path = points.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(" ");
-  return (
-    <svg width="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
-      {[0, 0.5, 1].map((f, i) => (
-        <line key={i} x1={pad} x2={width - pad} y1={pad + (height - pad * 2) * f} y2={pad + (height - pad * 2) * f} stroke="#27272a" strokeWidth="1" />
-      ))}
-      <path d={path} fill="none" stroke="#a3e635" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="3" fill="#a3e635" />)}
-      {data.map((d, i) => (
-        <text key={i} x={points[i][0]} y={height - 6} fontSize="9" fill="#a1a1aa" textAnchor="middle">{d[labelKey]}</text>
-      ))}
-    </svg>
-  );
-}
-
-// ---------- shared bits ----------
-function Field({ label, ...props }) {
-  return (
-    <div className="mb-3">
-      <label className="text-xs uppercase tracking-wider text-zinc-400 font-semibold">{label}</label>
-      <input {...props} className="w-full bg-white border-2 border-zinc-300 focus:border-lime-500 rounded-xl px-3 py-2.5 text-base text-black font-medium outline-none mt-1 placeholder:text-zinc-400" />
-    </div>
-  );
-}
-
-function Modal({ title, onClose, children }) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 w-full max-w-md rounded-3xl max-h-full overflow-y-auto border border-zinc-700">
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 sticky top-0 bg-zinc-900 border-b border-zinc-700">
-          <h3 className="font-bold text-lg text-white uppercase tracking-wide">{title}</h3>
-          <button onClick={onClose} className="p-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 text-white">
-            <IconX size={16} />
-          </button>
-        </div>
-        <div className="px-5 py-5">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function Segmented({ options, value, onChange }) {
-  return (
-    <div className="flex bg-zinc-800 rounded-xl p-1 mb-4 border border-zinc-700">
-      {options.map((opt) => (
-        <button key={opt} onClick={() => onChange(opt)}
-          className={`flex-1 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1.5 transition ${value === opt ? "bg-lime-400 text-black" : "text-zinc-300"}`}>
-          {opt}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ProgressBar({ pct, color = "#a3e635" }) {
-  return (
-    <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
-      <div className="h-full rounded-full transition-all" style={{ width: `${Math.max(0, Math.min(100, pct))}%`, backgroundColor: color }} />
-    </div>
+  var pathD = points.map(function (p, i) { return (i === 0 ? "M " : "L ") + p.x + " " + p.y; }).join(" ");
+  return h("svg", { width: "100%", height: height, viewBox: "0 0 " + width + " " + height, preserveAspectRatio: "none" },
+    [0, 0.5, 1].map(function (f) {
+      var y = padY + f * (height - padY * 2);
+      return h("line", { key: f, x1: padX, x2: width - padX, y1: y, y2: y, stroke: "#27272a", strokeWidth: "1" });
+    }),
+    h("path", { d: pathD, fill: "none", stroke: "#a3e635", strokeWidth: "2.5", strokeLinejoin: "round", strokeLinecap: "round" }),
+    points.map(function (p, i) { return h("circle", { key: i, cx: p.x, cy: p.y, r: "3", fill: "#a3e635" }); })
   );
 }
 
 // ---------- Goal edit form ----------
-function EditGoalsForm({ goals, unit, onSave }) {
-  const [targetWeight, setTargetWeight] = useState(String(fromKg(goals.targetWeightKg, unit)));
-  const [calorieGoal, setCalorieGoal] = useState(String(goals.calorieGoal));
-  const [workoutMinutes, setWorkoutMinutes] = useState(String(goals.workoutMinutes));
-  const [workoutDays, setWorkoutDays] = useState(String(goals.workoutDays));
+function EditGoalsForm(props) {
+  var goals = props.goals, unit = props.unit;
+  var s1 = useState(String(fromKg(goals.targetWeightKg, unit))), targetWeight = s1[0], setTargetWeight = s1[1];
+  var s2 = useState(String(goals.calorieGoal)), calorieGoal = s2[0], setCalorieGoal = s2[1];
+  var s3 = useState(String(goals.workoutMinutes)), workoutMinutes = s3[0], setWorkoutMinutes = s3[1];
+  var s4 = useState(String(goals.workoutDays)), workoutDays = s4[0], setWorkoutDays = s4[1];
 
   function submit() {
-    onSave({
+    props.onSave({
       targetWeightKg: toKg(parseFloat(targetWeight) || 0, unit),
-      calorieGoal: parseInt(calorieGoal) || 0,
-      workoutMinutes: parseInt(workoutMinutes) || 0,
-      workoutDays: Math.min(7, Math.max(1, parseInt(workoutDays) || 1)),
+      calorieGoal: parseInt(calorieGoal, 10) || 0,
+      workoutMinutes: parseInt(workoutMinutes, 10) || 0,
+      workoutDays: Math.min(7, Math.max(1, parseInt(workoutDays, 10) || 1))
     });
   }
 
-  return (
-    <div>
-      <Field label={`Target weight (${unit})`} value={targetWeight} onChange={(e) => setTargetWeight(e.target.value)} placeholder="0" inputMode="decimal" />
-      <Field label="Daily calorie goal" value={calorieGoal} onChange={(e) => setCalorieGoal(e.target.value)} placeholder="0" inputMode="numeric" />
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Workout length (min)" value={workoutMinutes} onChange={(e) => setWorkoutMinutes(e.target.value)} placeholder="0" inputMode="numeric" />
-        <Field label="Days per week" value={workoutDays} onChange={(e) => setWorkoutDays(e.target.value)} placeholder="0" inputMode="numeric" />
-      </div>
-      <button onClick={submit} className="w-full bg-lime-400 text-black rounded-xl py-3.5 font-bold text-sm mt-2">Save goals</button>
-    </div>
+  return h("div", null,
+    h(Field, { label: "Target weight (" + unit + ")", value: targetWeight, onChange: function (e) { setTargetWeight(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+    h(Field, { label: "Daily calorie goal", value: calorieGoal, onChange: function (e) { setCalorieGoal(e.target.value); }, placeholder: "0", inputMode: "numeric" }),
+    h("div", { className: "grid-2" },
+      h(Field, { label: "Workout length (min)", value: workoutMinutes, onChange: function (e) { setWorkoutMinutes(e.target.value); }, placeholder: "0", inputMode: "numeric" }),
+      h(Field, { label: "Days per week", value: workoutDays, onChange: function (e) { setWorkoutDays(e.target.value); }, placeholder: "0", inputMode: "numeric" })
+    ),
+    h("button", { onClick: submit, className: "btn-primary mt-2" }, "Save goals")
   );
 }
 
-// ---------- Food entry: quick-add from history, manual, or scan ----------
-function AddFoodFlow({ onAdd, knownFoods }) {
-  const [meal, setMeal] = useState(null);
-  const [mode, setMode] = useState(knownFoods.length ? "Quick add" : "Manual");
-  const [name, setName] = useState("");
-  const [calories, setCalories] = useState("");
-  const [protein, setProtein] = useState("");
-  const [carbs, setCarbs] = useState("");
-  const [sugar, setSugar] = useState("");
-  const [fat, setFat] = useState("");
-  const [scanStep, setScanStep] = useState("idle");
+// ---------- Food entry: quick-add / manual / scan ----------
+function AddFoodFlow(props) {
+  var knownFoods = props.knownFoods;
+  var sMeal = useState(null), meal = sMeal[0], setMeal = sMeal[1];
+  var sMode = useState(knownFoods.length ? "Quick add" : "Manual"), mode = sMode[0], setMode = sMode[1];
+  var sName = useState(""), name = sName[0], setName = sName[1];
+  var sCal = useState(""), calories = sCal[0], setCalories = sCal[1];
+  var sPro = useState(""), protein = sPro[0], setProtein = sPro[1];
+  var sCarb = useState(""), carbs = sCarb[0], setCarbs = sCarb[1];
+  var sSugar = useState(""), sugar = sSugar[0], setSugar = sSugar[1];
+  var sFat = useState(""), fat = sFat[0], setFat = sFat[1];
+  var sScan = useState("idle"), scanStep = sScan[0], setScanStep = sScan[1];
 
   function fillFrom(food) {
     setName(food.name); setCalories(String(food.calories)); setProtein(String(food.protein));
     setCarbs(String(food.carbs)); setSugar(String(food.sugar)); setFat(String(food.fat));
     setMode("Manual");
   }
-
   function submit() {
     if (!name.trim() || !calories) return;
-    onAdd(meal, {
-      name: name.trim(), calories: parseFloat(calories) || 0, protein: parseFloat(protein) || 0,
-      carbs: parseFloat(carbs) || 0, sugar: parseFloat(sugar) || 0, fat: parseFloat(fat) || 0,
+    props.onAdd(meal, {
+      name: name.trim(),
+      calories: parseFloat(calories) || 0,
+      protein: parseFloat(protein) || 0,
+      carbs: parseFloat(carbs) || 0,
+      sugar: parseFloat(sugar) || 0,
+      fat: parseFloat(fat) || 0
     });
   }
-
   function mockScan(kind) {
     setScanStep("scanning");
-    setTimeout(() => {
+    setTimeout(function () {
       setName(kind === "barcode" ? "Scanned product" : "Label scan result");
       setCalories("210"); setProtein("9"); setCarbs("27"); setSugar("11"); setFat("7");
       setScanStep("idle"); setMode("Manual");
@@ -235,574 +408,439 @@ function AddFoodFlow({ onAdd, knownFoods }) {
   }
 
   if (!meal) {
-    return (
-      <div>
-        <p className="text-zinc-400 text-sm mb-3">Which meal is this for?</p>
-        {MEALS.map((m) => (
-          <button key={m} onClick={() => setMeal(m)} className="w-full text-left bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3.5 mb-2 text-white font-semibold">{m}</button>
-        ))}
-      </div>
+    return h("div", null,
+      h("p", { className: "hint" }, "Which meal is this for?"),
+      MEALS.map(function (m) {
+        return h("button", { key: m, onClick: function () { setMeal(m); }, className: "list-btn" }, m);
+      })
     );
   }
 
-  const options = knownFoods.length ? ["Quick add", "Manual", "Scan"] : ["Manual", "Scan"];
+  var options = knownFoods.length ? ["Quick add", "Manual", "Scan"] : ["Manual", "Scan"];
 
-  return (
-    <div>
-      <button onClick={() => setMeal(null)} className="text-lime-400 text-xs font-bold uppercase mb-3">‹ {meal}</button>
-      <Segmented options={options} value={mode} onChange={setMode} />
+  return h("div", null,
+    h("button", { onClick: function () { setMeal(null); }, className: "back-link" }, "‹ " + meal),
+    h(Segmented, { options: options, value: mode, onChange: setMode }),
 
-      {mode === "Quick add" && (
-        <div className="max-h-72 overflow-y-auto">
-          {knownFoods.map((f) => (
-            <button key={f.name} onClick={() => fillFrom(f)} className="w-full text-left py-2.5 border-t border-zinc-800 first:border-t-0">
-              <div className="text-sm font-semibold text-white">{f.name}</div>
-              <div className="text-xs text-zinc-400">{f.calories} cal · P {f.protein}g · C {f.carbs}g · Sugar {f.sugar}g · F {f.fat}g</div>
-            </button>
-          ))}
-        </div>
-      )}
+    mode === "Quick add" ? h("div", { className: "scroll-list" },
+      knownFoods.map(function (f) {
+        return h("button", { key: f.name, onClick: function () { fillFrom(f); }, className: "quick-item" },
+          h("div", { className: "quick-item-title" }, f.name),
+          h("div", { className: "quick-item-sub" }, f.calories + " cal · P " + f.protein + "g · C " + f.carbs + "g · Sugar " + f.sugar + "g · F " + f.fat + "g")
+        );
+      })
+    ) : null,
 
-      {mode === "Scan" && (
-        <div className="text-center py-4">
-          {scanStep === "scanning" ? (
-            <div className="text-lime-400 font-mono text-sm tracking-widest animate-pulse">READING…</div>
-          ) : (
-            <>
-              <p className="text-zinc-400 text-sm mb-4">Not wired to a real camera or database — picks demo values you can then edit.</p>
-              <button onClick={() => mockScan("barcode")} className="w-full bg-zinc-800 border border-zinc-600 rounded-xl py-3.5 mb-2.5 flex items-center justify-center gap-2 text-white font-semibold text-sm">
-                <IconScanLine size={17} /> Scan barcode
-              </button>
-              <button onClick={() => mockScan("label")} className="w-full bg-zinc-800 border border-zinc-600 rounded-xl py-3.5 flex items-center justify-center gap-2 text-white font-semibold text-sm">
-                <IconCamera size={17} /> Photo nutrition label
-              </button>
-            </>
-          )}
-        </div>
-      )}
+    mode === "Scan" ? h("div", { className: "scan-box" },
+      scanStep === "scanning"
+        ? h("div", { className: "scanning-text" }, "READING…")
+        : h("div", null,
+            h("p", { className: "hint mb-4" }, "Not wired to a real camera or nutrition database — picks demo values you can then edit."),
+            h("button", { onClick: function () { mockScan("barcode"); }, className: "scan-btn" }, Icon("📶", 17), " Scan barcode"),
+            h("button", { onClick: function () { mockScan("label"); }, className: "scan-btn" }, Icon("📷", 17), " Photo nutrition label")
+          )
+    ) : null,
 
-      {mode === "Manual" && (
-        <div>
-          <Field label="Food name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Grilled chicken" />
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Calories" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="0" inputMode="decimal" />
-            <Field label="Protein (g)" value={protein} onChange={(e) => setProtein(e.target.value)} placeholder="0" inputMode="decimal" />
-            <Field label="Carbs (g)" value={carbs} onChange={(e) => setCarbs(e.target.value)} placeholder="0" inputMode="decimal" />
-            <Field label="Sugar (g)" value={sugar} onChange={(e) => setSugar(e.target.value)} placeholder="0" inputMode="decimal" />
-          </div>
-          <Field label="Fat (g)" value={fat} onChange={(e) => setFat(e.target.value)} placeholder="0" inputMode="decimal" />
-          <button onClick={submit} disabled={!name.trim() || !calories} className="w-full bg-lime-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-black rounded-xl py-3.5 font-bold text-sm mt-2 flex items-center justify-center gap-2">
-            <IconPen size={16} /> Add food
-          </button>
-        </div>
-      )}
-    </div>
+    mode === "Manual" ? h("div", null,
+      h(Field, { label: "Food name", value: name, onChange: function (e) { setName(e.target.value); }, placeholder: "e.g. Grilled chicken" }),
+      h("div", { className: "grid-2" },
+        h(Field, { label: "Calories", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Protein (g)", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Carbs (g)", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Sugar (g)", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+      ),
+      h(Field, { label: "Fat (g)", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+      h("button", { onClick: submit, disabled: !name.trim() || !calories, className: "btn-primary mt-2" }, Icon("✎", 16), " Add food")
+    ) : null
   );
 }
 
-// ---------- Workout entry: quick-add or manual ----------
-function AddWorkoutForm({ onAdd, knownWorkouts }) {
-  const [mode, setMode] = useState(knownWorkouts.length ? "Quick add" : "Manual");
-  const [name, setName] = useState("");
-  const [duration, setDuration] = useState("");
-  const [calories, setCalories] = useState("");
+// ---------- Workout entry ----------
+function AddWorkoutForm(props) {
+  var knownWorkouts = props.knownWorkouts;
+  var sMode = useState(knownWorkouts.length ? "Quick add" : "Manual"), mode = sMode[0], setMode = sMode[1];
+  var sName = useState(""), name = sName[0], setName = sName[1];
+  var sDur = useState(""), duration = sDur[0], setDuration = sDur[1];
+  var sCal = useState(""), calories = sCal[0], setCalories = sCal[1];
 
-  function fillFrom(w) { setName(w.name); setDuration(String(w.durationMinutes)); setCalories(String(w.caloriesBurned)); setMode("Manual"); }
+  function fillFrom(w) {
+    setName(w.name); setDuration(String(w.durationMinutes)); setCalories(String(w.caloriesBurned));
+    setMode("Manual");
+  }
   function submit() {
     if (!name.trim() || !calories) return;
-    onAdd({ name: name.trim(), durationMinutes: parseFloat(duration) || 0, caloriesBurned: parseFloat(calories) || 0 });
+    props.onAdd({ name: name.trim(), durationMinutes: parseFloat(duration) || 0, caloriesBurned: parseFloat(calories) || 0 });
   }
 
-  const options = knownWorkouts.length ? ["Quick add", "Manual"] : ["Manual"];
+  var options = knownWorkouts.length ? ["Quick add", "Manual"] : ["Manual"];
 
-  return (
-    <div>
-      {knownWorkouts.length > 0 && <Segmented options={options} value={mode} onChange={setMode} />}
-
-      {mode === "Quick add" && (
-        <div className="max-h-72 overflow-y-auto mb-2">
-          {knownWorkouts.map((w) => (
-            <button key={w.name} onClick={() => fillFrom(w)} className="w-full text-left py-2.5 border-t border-zinc-800 first:border-t-0">
-              <div className="text-sm font-semibold text-white">{w.name}</div>
-              <div className="text-xs text-zinc-400">{w.durationMinutes} min · {w.caloriesBurned} cal</div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {mode === "Manual" && (
-        <div>
-          <Field label="Activity name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Deadlift session" />
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Duration (min)" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="0" inputMode="decimal" />
-            <Field label="Calories burned" value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="0" inputMode="decimal" />
-          </div>
-          <button onClick={submit} disabled={!name.trim() || !calories} className="w-full bg-lime-400 disabled:bg-zinc-700 disabled:text-zinc-500 text-black rounded-xl py-3.5 font-bold text-sm mt-2">Add workout</button>
-        </div>
-      )}
-    </div>
+  return h("div", null,
+    knownWorkouts.length > 0 ? h(Segmented, { options: options, value: mode, onChange: setMode }) : null,
+    mode === "Quick add" ? h("div", { className: "scroll-list mb-2" },
+      knownWorkouts.map(function (w) {
+        return h("button", { key: w.name, onClick: function () { fillFrom(w); }, className: "quick-item" },
+          h("div", { className: "quick-item-title" }, w.name),
+          h("div", { className: "quick-item-sub" }, w.durationMinutes + " min · " + w.caloriesBurned + " cal")
+        );
+      })
+    ) : null,
+    mode === "Manual" ? h("div", null,
+      h(Field, { label: "Activity name", value: name, onChange: function (e) { setName(e.target.value); }, placeholder: "e.g. Deadlift session" }),
+      h("div", { className: "grid-2" },
+        h(Field, { label: "Duration (min)", value: duration, onChange: function (e) { setDuration(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Calories burned", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+      ),
+      h("button", { onClick: submit, disabled: !name.trim() || !calories, className: "btn-primary mt-2" }, "Add workout")
+    ) : null
   );
 }
 
-function MacroBar({ label, current, goal, color }) {
-  const pct = goal > 0 ? Math.min(100, (current / goal) * 100) : 0;
-  return (
-    <div className="mb-3">
-      <div className="flex justify-between mb-1">
-        <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">{label}</span>
-        <span className="text-xs font-mono text-zinc-400">{Math.round(current)} / {goal}g</span>
-      </div>
-      <ProgressBar pct={pct} color={color} />
-    </div>
-  );
-}
-
-function GoalCard({ goals, unit, currentWeightKg, startWeightKg, sessionsThisWeek, onEdit }) {
-  const currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
-  const targetDisplay = fromKg(goals.targetWeightKg, unit);
-  const startDisplay = startWeightKg != null ? fromKg(startWeightKg, unit) : null;
-  let weightPct = 0;
+// ---------- Goal card ----------
+function GoalCard(props) {
+  var goals = props.goals, unit = props.unit, currentWeightKg = props.currentWeightKg, startWeightKg = props.startWeightKg, sessionsThisWeek = props.sessionsThisWeek;
+  var currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
+  var targetDisplay = fromKg(goals.targetWeightKg, unit);
+  var startDisplay = startWeightKg != null ? fromKg(startWeightKg, unit) : null;
+  var weightPct = 0;
   if (startWeightKg != null && goals.targetWeightKg) {
-    const span = startWeightKg - goals.targetWeightKg;
+    var span = startWeightKg - goals.targetWeightKg;
     if (span !== 0) weightPct = ((startWeightKg - currentWeightKg) / span) * 100;
   }
-  const workoutPct = goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0;
+  var workoutPct = goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0;
 
-  return (
-    <div className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <IconTarget size={16} className="text-lime-400" />
-          <span className="font-bold text-white text-sm uppercase tracking-wide">Goals</span>
-        </div>
-        <button onClick={onEdit} className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 flex items-center justify-center">
-          <IconPencil size={13} />
-        </button>
-      </div>
-      <div className="mb-4">
-        <div className="flex justify-between mb-1">
-          <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">Weight</span>
-          <span className="text-xs font-mono text-zinc-400">
-            {currentDisplay != null ? `${currentDisplay} → ${targetDisplay} ${unit}` : `Target: ${targetDisplay} ${unit}`}
-          </span>
-        </div>
-        {startDisplay != null ? <ProgressBar pct={weightPct} color="#a3e635" /> : <p className="text-xs text-zinc-500">Log a weight entry to start tracking progress.</p>}
-      </div>
-      <div className="mb-4">
-        <div className="flex justify-between mb-1">
-          <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">Calories</span>
-          <span className="text-xs font-mono text-zinc-400">{goals.calorieGoal} / day</span>
-        </div>
-      </div>
-      <div>
-        <div className="flex justify-between mb-1">
-          <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">Workouts this week</span>
-          <span className="text-xs font-mono text-zinc-400">{sessionsThisWeek} / {goals.workoutDays} · {goals.workoutMinutes} min target</span>
-        </div>
-        <ProgressBar pct={workoutPct} color="#fb923c" />
-      </div>
-    </div>
+  return h("div", { className: "card mb-4" },
+    h("div", { className: "row-between mb-3" },
+      h("div", { className: "row gap-2" }, Icon("🎯", 16, "text-lime"), h("span", { className: "card-title" }, "Goals")),
+      h("button", { onClick: props.onEdit, className: "icon-btn" }, Icon("✏️", 13))
+    ),
+    h("div", { className: "mb-4" },
+      h("div", { className: "row-between mb-1" },
+        h("span", { className: "label-sm" }, "Weight"),
+        h("span", { className: "value-mono" }, currentDisplay != null ? (currentDisplay + " → " + targetDisplay + " " + unit) : ("Target: " + targetDisplay + " " + unit))
+      ),
+      startDisplay != null ? h(ProgressBar, { pct: weightPct, color: "#a3e635" }) : h("p", { className: "hint" }, "Log a weight entry to start tracking progress.")
+    ),
+    h("div", { className: "mb-4" },
+      h("div", { className: "row-between mb-1" },
+        h("span", { className: "label-sm" }, "Calories"),
+        h("span", { className: "value-mono" }, goals.calorieGoal + " / day")
+      )
+    ),
+    h("div", null,
+      h("div", { className: "row-between mb-1" },
+        h("span", { className: "label-sm" }, "Workouts this week"),
+        h("span", { className: "value-mono" }, sessionsThisWeek + " / " + goals.workoutDays + " · " + goals.workoutMinutes + " min target")
+      ),
+      h(ProgressBar, { pct: workoutPct, color: "#fb923c" })
+    )
   );
 }
 
-function SummariesModal({ weeklySummaries, monthlySummaries, onClose }) {
-  return (
-    <Modal title="History" onClose={onClose}>
-      <div className="flex items-center gap-2 mb-2">
-        <IconClock size={14} className="text-lime-400" />
-        <span className="text-sm font-bold text-white uppercase tracking-wide">Weekly summaries</span>
-      </div>
-      {weeklySummaries.length === 0 && <p className="text-zinc-500 text-sm mb-4">None yet — generated automatically each Sunday at 11:50pm.</p>}
-      {[...weeklySummaries].reverse().map((s) => (
-        <div key={s.weekKey} className="bg-zinc-800 rounded-xl p-3 mb-2 text-sm">
-          <div className="text-white font-semibold mb-1">Week of {s.weekKey}</div>
-          <div className="text-zinc-400 text-xs">Avg cal/day: {s.avgCalories} · Workouts: {s.workoutCount} · Burned: {s.caloriesBurned} cal</div>
-          <div className="text-zinc-400 text-xs">Protein {s.totalProtein}g · Carbs {s.totalCarbs}g · Sugar {s.totalSugar}g · Fat {s.totalFat}g</div>
-        </div>
-      ))}
-      <div className="flex items-center gap-2 mt-5 mb-2">
-        <IconChart size={14} className="text-lime-400" />
-        <span className="text-sm font-bold text-white uppercase tracking-wide">Monthly summaries</span>
-      </div>
-      {monthlySummaries.length === 0 && <p className="text-zinc-500 text-sm">None yet — generated automatically on the last day of the month at 11:50pm.</p>}
-      {[...monthlySummaries].reverse().map((s) => (
-        <div key={s.monthKey} className="bg-zinc-800 rounded-xl p-3 mb-2 text-sm">
-          <div className="text-white font-semibold mb-1">{s.monthKey}</div>
-          <div className="text-zinc-400 text-xs">Avg cal/day: {s.avgCalories} · Workouts: {s.workoutCount} · Burned: {s.caloriesBurned} cal</div>
-          <div className="text-zinc-400 text-xs">Protein {s.totalProtein}g · Carbs {s.totalCarbs}g · Sugar {s.totalSugar}g · Fat {s.totalFat}g</div>
-        </div>
-      ))}
-    </Modal>
+function SummariesModal(props) {
+  return h(Modal, { title: "History", onClose: props.onClose },
+    h("div", { className: "row gap-2 mb-2" }, Icon("🕐", 14, "text-lime"), h("span", { className: "card-title" }, "Weekly summaries")),
+    props.weeklySummaries.length === 0 ? h("p", { className: "hint mb-4" }, "None yet — generated automatically each Sunday at 11:50pm.") : null,
+    props.weeklySummaries.slice().reverse().map(function (s) {
+      return h("div", { key: s.weekKey, className: "summary-item" },
+        h("div", { className: "summary-title" }, "Week of " + s.weekKey),
+        h("div", { className: "summary-line" }, "Avg cal/day: " + s.avgCalories + " · Workouts: " + s.workoutCount + " · Burned: " + s.caloriesBurned + " cal"),
+        h("div", { className: "summary-line" }, "Protein " + s.totalProtein + "g · Carbs " + s.totalCarbs + "g · Sugar " + s.totalSugar + "g · Fat " + s.totalFat + "g")
+      );
+    }),
+    h("div", { className: "row gap-2 mt-5 mb-2" }, Icon("📊", 14, "text-lime"), h("span", { className: "card-title" }, "Monthly summaries")),
+    props.monthlySummaries.length === 0 ? h("p", { className: "hint" }, "None yet — generated automatically on the last day of the month at 11:50pm.") : null,
+    props.monthlySummaries.slice().reverse().map(function (s) {
+      return h("div", { key: s.monthKey, className: "summary-item" },
+        h("div", { className: "summary-title" }, s.monthKey),
+        h("div", { className: "summary-line" }, "Avg cal/day: " + s.avgCalories + " · Workouts: " + s.workoutCount + " · Burned: " + s.caloriesBurned + " cal"),
+        h("div", { className: "summary-line" }, "Protein " + s.totalProtein + "g · Carbs " + s.totalCarbs + "g · Sugar " + s.totalSugar + "g · Fat " + s.totalFat + "g")
+      );
+    })
   );
 }
 
-// ---------- Main ----------
-function FitTracker() {
-  const [loaded, setLoaded] = useState(false);
-  const [tab, setTab] = useState("dashboard");
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [goalModalOpen, setGoalModalOpen] = useState(false);
-  const [summariesOpen, setSummariesOpen] = useState(false);
-  const [unit, setUnit] = useState("kg");
+// ---------- Main app ----------
+var TABS = [
+  { key: "dashboard", label: "Today", glyph: "🏠" },
+  { key: "food", label: "Food", glyph: "🍽️" },
+  { key: "workouts", label: "Train", glyph: "🏋️" },
+  { key: "weight", label: "Weight", glyph: "⚖️" }
+];
 
-  const [goals, setGoals] = useState({ targetWeightKg: 75, calorieGoal: 2200, workoutMinutes: 40, workoutDays: 3 });
-  const macroGoals = { protein: 150, carbs: 220, sugar: 50, fat: 70 };
+function Datum() {
+  var sTab = useState("dashboard"), tab = sTab[0], setTab = sTab[1];
+  var sSettings = useState(false), settingsOpen = sSettings[0], setSettingsOpen = sSettings[1];
+  var sGoalModal = useState(false), goalModalOpen = sGoalModal[0], setGoalModalOpen = sGoalModal[1];
+  var sSummaries = useState(false), summariesOpen = sSummaries[0], setSummariesOpen = sSummaries[1];
+  var sUnit = useState(function () { return loadKey("unit", "kg"); }), unit = sUnit[0], setUnit = sUnit[1];
 
-  const [foodEntries, setFoodEntries] = useState([]);
-  const [workouts, setWorkouts] = useState([]);
-  const [weights, setWeights] = useState([]);
-  const [weeklySummaries, setWeeklySummaries] = useState([]);
-  const [monthlySummaries, setMonthlySummaries] = useState([]);
-  const lastWeekChecked = useRef(null);
-  const lastMonthChecked = useRef(null);
+  var sGoals = useState(function () { return loadKey("goals", { targetWeightKg: 75, calorieGoal: 2200, workoutMinutes: 40, workoutDays: 3 }); });
+  var goals = sGoals[0], setGoals = sGoals[1];
+  var macroGoals = { protein: 150, carbs: 220, sugar: 50, fat: 70 };
 
-  const [foodModalOpen, setFoodModalOpen] = useState(false);
-  const [workoutModal, setWorkoutModal] = useState(false);
-  const [weightInput, setWeightInput] = useState("");
+  var sFood = useState(function () { return loadKey("foodEntries", []); }), foodEntries = sFood[0], setFoodEntries = sFood[1];
+  var sWorkouts = useState(function () { return loadKey("workouts", []); }), workouts = sWorkouts[0], setWorkouts = sWorkouts[1];
+  var sWeights = useState(function () { return loadKey("weights", []); }), weights = sWeights[0], setWeights = sWeights[1];
+  var sWeekly = useState(function () { return loadKey("weeklySummaries", []); }), weeklySummaries = sWeekly[0], setWeeklySummaries = sWeekly[1];
+  var sMonthly = useState(function () { return loadKey("monthlySummaries", []); }), monthlySummaries = sMonthly[0], setMonthlySummaries = sMonthly[1];
+  var lastWeekChecked = useRef(loadKey("lastWeekSummarized", null));
+  var lastMonthChecked = useRef(loadKey("lastMonthSummarized", null));
 
-  useEffect(() => {
-    (async () => {
-      const [fe, wo, we, ws, ms, g, u] = await Promise.all([
-        loadKey("foodEntries", []), loadKey("workouts", []), loadKey("weights", []),
-        loadKey("weeklySummaries", []), loadKey("monthlySummaries", []),
-        loadKey("goals", goals), loadKey("unit", "kg"),
-      ]);
-      setFoodEntries(fe); setWorkouts(wo); setWeights(we);
-      setWeeklySummaries(ws); setMonthlySummaries(ms);
-      setGoals(g); setUnit(u);
-      lastWeekChecked.current = await loadKey("lastWeekSummarized", null);
-      lastMonthChecked.current = await loadKey("lastMonthSummarized", null);
-      setLoaded(true);
-    })();
-  }, []);
+  var sFoodModal = useState(false), foodModalOpen = sFoodModal[0], setFoodModalOpen = sFoodModal[1];
+  var sWorkoutModal = useState(false), workoutModal = sWorkoutModal[0], setWorkoutModal = sWorkoutModal[1];
+  var sWeightInput = useState(""), weightInput = sWeightInput[0], setWeightInput = sWeightInput[1];
 
-  useEffect(() => { if (loaded) saveKey("foodEntries", foodEntries); }, [foodEntries, loaded]);
-  useEffect(() => { if (loaded) saveKey("workouts", workouts); }, [workouts, loaded]);
-  useEffect(() => { if (loaded) saveKey("weights", weights); }, [weights, loaded]);
-  useEffect(() => { if (loaded) saveKey("weeklySummaries", weeklySummaries); }, [weeklySummaries, loaded]);
-  useEffect(() => { if (loaded) saveKey("monthlySummaries", monthlySummaries); }, [monthlySummaries, loaded]);
-  useEffect(() => { if (loaded) saveKey("goals", goals); }, [goals, loaded]);
-  useEffect(() => { if (loaded) saveKey("unit", unit); }, [unit, loaded]);
+  useEffect(function () { saveKey("foodEntries", foodEntries); }, [foodEntries]);
+  useEffect(function () { saveKey("workouts", workouts); }, [workouts]);
+  useEffect(function () { saveKey("weights", weights); }, [weights]);
+  useEffect(function () { saveKey("weeklySummaries", weeklySummaries); }, [weeklySummaries]);
+  useEffect(function () { saveKey("monthlySummaries", monthlySummaries); }, [monthlySummaries]);
+  useEffect(function () { saveKey("goals", goals); }, [goals]);
+  useEffect(function () { saveKey("unit", unit); }, [unit]);
 
   function aggregate(entries, wos) {
-    const totals = entries.reduce((a, e) => ({
-      calories: a.calories + e.calories, protein: a.protein + e.protein,
-      carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat,
-    }), { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
-    const days = new Set(entries.map((e) => e.date)).size || 1;
+    var totals = entries.reduce(function (a, e) {
+      return { calories: a.calories + e.calories, protein: a.protein + e.protein, carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat };
+    }, { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
+    var days = new Set(entries.map(function (e) { return e.date; })).size || 1;
     return {
       avgCalories: Math.round(totals.calories / days),
       totalProtein: Math.round(totals.protein), totalCarbs: Math.round(totals.carbs),
       totalSugar: Math.round(totals.sugar), totalFat: Math.round(totals.fat),
-      workoutCount: wos.length, caloriesBurned: wos.reduce((s, w) => s + w.caloriesBurned, 0),
+      workoutCount: wos.length,
+      caloriesBurned: wos.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)
     };
   }
 
-  useEffect(() => {
-    if (!loaded) return;
+  useEffect(function () {
     function check() {
-      const now = new Date();
-      const wk = weekKey(now);
+      var now = new Date();
+      var wk = weekKey(now);
       if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() >= 50 && lastWeekChecked.current !== wk) {
-        const weekStart = startOfWeek(now);
-        const entries = foodEntries.filter((e) => new Date(e.date) >= weekStart);
-        const wos = workouts.filter((w) => new Date(w.date) >= weekStart);
-        if (entries.length || wos.length) setWeeklySummaries((prev) => [...prev, { weekKey: wk, ...aggregate(entries, wos) }]);
+        var weekStart = startOfWeek(now);
+        var entries = foodEntries.filter(function (e) { return new Date(e.date) >= weekStart; });
+        var wos = workouts.filter(function (w) { return new Date(w.date) >= weekStart; });
+        if (entries.length || wos.length) {
+          setWeeklySummaries(function (prev) { return prev.concat([Object.assign({ weekKey: wk }, aggregate(entries, wos))]); });
+        }
         lastWeekChecked.current = wk; saveKey("lastWeekSummarized", wk);
       }
-      const mk = monthKey(now);
+      var mk = monthKey(now);
       if (isLastDayOfMonth(now) && now.getHours() === 23 && now.getMinutes() >= 50 && lastMonthChecked.current !== mk) {
-        const entries = foodEntries.filter((e) => e.date.slice(0, 7) === mk);
-        const wos = workouts.filter((w) => w.date.slice(0, 7) === mk);
-        if (entries.length || wos.length) setMonthlySummaries((prev) => [...prev, { monthKey: mk, ...aggregate(entries, wos) }]);
+        var mEntries = foodEntries.filter(function (e) { return e.date.slice(0, 7) === mk; });
+        var mWos = workouts.filter(function (w) { return w.date.slice(0, 7) === mk; });
+        if (mEntries.length || mWos.length) {
+          setMonthlySummaries(function (prev) { return prev.concat([Object.assign({ monthKey: mk }, aggregate(mEntries, mWos))]); });
+        }
         lastMonthChecked.current = mk; saveKey("lastMonthSummarized", mk);
       }
     }
     check();
-    const id = setInterval(check, 30000);
-    return () => clearInterval(id);
-  }, [loaded, foodEntries, workouts]);
+    var id = setInterval(check, 30000);
+    return function () { clearInterval(id); };
+  }, [foodEntries, workouts]);
 
-  const today = dateKey();
-  const todaysFood = useMemo(() => foodEntries.filter((e) => e.date === today), [foodEntries, today]);
-  const todaysWorkouts = useMemo(() => workouts.filter((w) => w.date === today), [workouts, today]);
+  var today = dateKey();
+  var todaysFood = useMemo(function () { return foodEntries.filter(function (e) { return e.date === today; }); }, [foodEntries, today]);
+  var todaysWorkouts = useMemo(function () { return workouts.filter(function (w) { return w.date === today; }); }, [workouts, today]);
 
-  const totals = useMemo(() => todaysFood.reduce((a, e) => ({
-    calories: a.calories + e.calories, protein: a.protein + e.protein,
-    carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat,
-  }), { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 }), [todaysFood]);
+  var totals = useMemo(function () {
+    return todaysFood.reduce(function (a, e) {
+      return { calories: a.calories + e.calories, protein: a.protein + e.protein, carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat };
+    }, { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
+  }, [todaysFood]);
 
-  const knownFoods = useMemo(() => {
-    const byName = new Map();
-    for (const e of foodEntries) byName.set(e.name, e);
-    return [...byName.values()].reverse().slice(0, 20);
+  var knownFoods = useMemo(function () {
+    var byName = new Map();
+    foodEntries.forEach(function (e) { byName.set(e.name, e); });
+    return Array.from(byName.values()).reverse().slice(0, 20);
   }, [foodEntries]);
 
-  const knownWorkouts = useMemo(() => {
-    const byName = new Map();
-    for (const w of workouts) byName.set(w.name, w);
-    return [...byName.values()].reverse().slice(0, 20);
+  var knownWorkouts = useMemo(function () {
+    var byName = new Map();
+    workouts.forEach(function (w) { byName.set(w.name, w); });
+    return Array.from(byName.values()).reverse().slice(0, 20);
   }, [workouts]);
 
-  const displayWeights = weights.map((w) => ({ ...w, display: fromKg(w.kg, unit) }));
-  const currentWeightKg = weights.length ? weights[weights.length - 1].kg : null;
-  const startWeightKg = weights.length ? weights[0].kg : null;
-  const currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
+  var displayWeights = weights.map(function (w) { return Object.assign({}, w, { display: fromKg(w.kg, unit) }); });
+  var currentWeightKg = weights.length ? weights[weights.length - 1].kg : null;
+  var startWeightKg = weights.length ? weights[0].kg : null;
+  var currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
 
-  const sessionsThisWeek = useMemo(() => {
-    const wk = startOfWeek();
-    return workouts.filter((w) => new Date(w.date) >= wk).length;
+  var sessionsThisWeek = useMemo(function () {
+    var wk = startOfWeek();
+    return workouts.filter(function (w) { return new Date(w.date) >= wk; }).length;
   }, [workouts]);
 
   function addFood(meal, entry) {
-    const now = new Date();
-    setFoodEntries((prev) => [...prev, { id: uid(), meal, date: dateKey(now), timestamp: now.getTime(), ...entry }]);
+    var now = new Date();
+    setFoodEntries(function (prev) { return prev.concat([Object.assign({ id: uid(), meal: meal, date: dateKey(now), timestamp: now.getTime() }, entry)]); });
     setFoodModalOpen(false);
   }
-  function removeFood(id) { setFoodEntries((prev) => prev.filter((e) => e.id !== id)); }
+  function removeFood(id) { setFoodEntries(function (prev) { return prev.filter(function (e) { return e.id !== id; }); }); }
 
   function addWorkout(entry) {
-    const now = new Date();
-    setWorkouts((prev) => [...prev, { id: uid(), date: dateKey(now), timestamp: now.getTime(), ...entry }]);
+    var now = new Date();
+    setWorkouts(function (prev) { return prev.concat([Object.assign({ id: uid(), date: dateKey(now), timestamp: now.getTime() }, entry)]); });
     setWorkoutModal(false);
   }
-  function removeWorkout(id) { setWorkouts((prev) => prev.filter((w) => w.id !== id)); }
+  function removeWorkout(id) { setWorkouts(function (prev) { return prev.filter(function (w) { return w.id !== id; }); }); }
 
   function logWeight() {
-    const val = parseFloat(weightInput);
+    var val = parseFloat(weightInput);
     if (!val || val <= 0) return;
-    const kg = toKg(val, unit);
-    const now = new Date();
-    setWeights((prev) => [...prev, { id: uid(), date: dateKey(now), day: dateKey(now).slice(5), kg }]);
+    var kg = toKg(val, unit);
+    var now = new Date();
+    setWeights(function (prev) { return prev.concat([{ id: uid(), date: dateKey(now), day: dateKey(now).slice(5), kg: kg }]); });
     setWeightInput("");
   }
 
-  if (!loaded) {
-    return (
-      <div className="w-full max-w-md mx-auto h-screen max-h-[800px] bg-black flex flex-col items-center justify-center rounded-3xl gap-4">
-        <svg width="64" height="64" viewBox="0 0 64 64" className="animate-spin" style={{ animationDuration: "1.4s" }}>
-          <circle cx="32" cy="32" r="26" fill="none" stroke="#27272a" strokeWidth="8" />
-          <circle cx="32" cy="32" r="26" fill="none" stroke="#a3e635" strokeWidth="8" strokeDasharray={2 * Math.PI * 26} strokeDashoffset={2 * Math.PI * 26 * 0.3} strokeLinecap="round" transform="rotate(-90 32 32)" />
-        </svg>
-        <span className="text-white font-mono text-sm tracking-widest uppercase">Datum</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full max-w-md mx-auto h-screen max-h-[800px] bg-black flex flex-col font-sans rounded-3xl overflow-hidden border border-zinc-800">
-      <div className="px-5 pt-6 pb-3 flex items-center justify-between border-b border-zinc-800">
-        <div>
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <svg width="14" height="14" viewBox="0 0 64 64">
-              <circle cx="32" cy="32" r="26" fill="none" stroke="#27272a" strokeWidth="10" />
-              <circle cx="32" cy="32" r="26" fill="none" stroke="#a3e635" strokeWidth="10" strokeDasharray={2 * Math.PI * 26} strokeDashoffset={2 * Math.PI * 26 * 0.3} strokeLinecap="round" transform="rotate(-90 32 32)" />
-            </svg>
-            <span className="text-xs tracking-widest text-lime-400 font-bold uppercase font-mono">Datum</span>
-          </div>
-          <div className="font-display text-xl text-white uppercase tracking-tight">
-            {tab === "dashboard" && "Today"}
-            {tab === "food" && "Food Log"}
-            {tab === "workouts" && "Training"}
-            {tab === "weight" && "Weight"}
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => setSummariesOpen(true)} className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-200 flex items-center justify-center">
-            <IconClock size={16} />
-          </button>
-          <button onClick={() => setSettingsOpen(true)} className="w-9 h-9 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-200 flex items-center justify-center">
-            <IconSettings size={16} />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-5 pb-4 pt-4">
-        {tab === "dashboard" && (
-          <div>
-            <div className="bg-zinc-900 rounded-3xl p-6 text-center mb-4 border border-zinc-800">
-              <div className="font-mono text-5xl font-bold text-lime-400 leading-none">
-                {Math.round(totals.calories)}<span className="text-2xl text-zinc-500">/{goals.calorieGoal}</span>
-              </div>
-              <div className="text-xs text-zinc-400 mt-1 uppercase tracking-widest">calories consumed today</div>
-            </div>
-
-            <GoalCard goals={goals} unit={unit} currentWeightKg={currentWeightKg} startWeightKg={startWeightKg} sessionsThisWeek={sessionsThisWeek} onEdit={() => setGoalModalOpen(true)} />
-
-            <div className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
-              <div className="flex justify-between items-center mb-3">
-                <span className="font-bold text-white text-sm uppercase tracking-wide">Today's workout</span>
-              </div>
-              {todaysWorkouts.length === 0 ? (
-                <p className="text-zinc-500 text-sm mb-3">No workout logged today.</p>
-              ) : (
-                <div className="mb-3">
-                  {todaysWorkouts.map((w) => (
-                    <div key={w.id} className="flex justify-between py-2 border-t border-zinc-800 first:border-t-0">
-                      <div>
-                        <div className="text-sm text-white font-medium">{w.name}</div>
-                        <div className="text-xs text-zinc-400">{w.durationMinutes} min</div>
-                      </div>
-                      <div className="text-sm font-mono text-orange-400 self-center">{w.caloriesBurned} cal</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <button onClick={() => setWorkoutModal(true)} className="w-full bg-lime-400 text-black rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 uppercase tracking-wide">
-                <IconPlus size={16} /> Log workout
-              </button>
-            </div>
-
-            <div className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
-              <div className="flex justify-between items-center mb-3">
-                <span className="font-bold text-white text-sm uppercase tracking-wide">Nutrition</span>
-                <span className="text-xs font-mono text-zinc-400">{Math.round(totals.calories)} cal today</span>
-              </div>
-              <MacroBar label="Protein" current={totals.protein} goal={macroGoals.protein} color="#a3e635" />
-              <MacroBar label="Carbs" current={totals.carbs} goal={macroGoals.carbs} color="#fb923c" />
-              <MacroBar label="Sugar" current={totals.sugar} goal={macroGoals.sugar} color="#f472b6" />
-              <MacroBar label="Fat" current={totals.fat} goal={macroGoals.fat} color="#60a5fa" />
-              <button onClick={() => setFoodModalOpen(true)} className="w-full bg-lime-400 text-black rounded-xl py-3 font-bold text-sm flex items-center justify-center gap-2 uppercase tracking-wide mt-1">
-                <IconPlus size={16} /> Log food
-              </button>
-            </div>
-          </div>
-        )}
-
-        {tab === "food" && (
-          <div>
-            {MEALS.map((meal) => {
-              const entries = todaysFood.filter((e) => e.meal === meal);
-              const cals = entries.reduce((s, e) => s + e.calories, 0);
-              return (
-                <div key={meal} className="bg-zinc-900 rounded-2xl p-4 mb-3 border border-zinc-800">
-                  <div className="flex justify-between mb-2">
-                    <span className="font-bold text-sm text-white uppercase tracking-wide">{meal}</span>
-                    <span className="text-xs font-mono text-zinc-400">{cals} cal</span>
-                  </div>
-                  {entries.map((e) => (
-                    <div key={e.id} className="flex justify-between py-2.5 border-t border-zinc-800" onDoubleClick={() => removeFood(e.id)}>
-                      <div>
-                        <div className="text-sm text-white font-medium">{e.name}</div>
-                        <div className="text-xs text-zinc-400">P {e.protein}g · C {e.carbs}g (sugar {e.sugar}g) · F {e.fat}g</div>
-                      </div>
-                      <div className="text-sm font-mono text-lime-400 self-center">{e.calories}</div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-            <button onClick={() => setFoodModalOpen(true)} className="w-full bg-lime-400 text-black rounded-2xl py-3.5 font-bold text-sm flex items-center justify-center gap-2 uppercase tracking-wide">
-              <IconPlus size={16} /> Log food
-            </button>
-          </div>
-        )}
-
-        {tab === "workouts" && (
-          <div>
-            <div className="bg-zinc-900 rounded-2xl p-5 text-center mb-4 border border-zinc-800">
-              <div className="font-mono text-4xl font-bold text-lime-400">{todaysWorkouts.reduce((s, w) => s + w.caloriesBurned, 0)}</div>
-              <div className="text-xs text-zinc-400 uppercase tracking-widest">calories burned today</div>
-            </div>
-            <div className="bg-zinc-900 rounded-2xl p-4 mb-4 border border-zinc-800">
-              <div className="flex justify-between mb-1">
-                <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">This week</span>
-                <span className="text-xs font-mono text-zinc-400">{sessionsThisWeek} / {goals.workoutDays} sessions</span>
-              </div>
-              <ProgressBar pct={goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0} color="#fb923c" />
-            </div>
-            {todaysWorkouts.map((w) => (
-              <div key={w.id} className="flex justify-between bg-zinc-900 rounded-2xl p-4 mb-2 border border-zinc-800" onDoubleClick={() => removeWorkout(w.id)}>
-                <div>
-                  <div className="font-bold text-sm text-white">{w.name}</div>
-                  <div className="text-xs text-zinc-400">{w.durationMinutes} min · double-tap to remove</div>
-                </div>
-                <div className="text-sm font-mono text-lime-400 self-center">{w.caloriesBurned}</div>
-              </div>
-            ))}
-            {todaysWorkouts.length === 0 && <div className="text-center text-zinc-500 text-sm mt-8 mb-4">No workouts logged today.</div>}
-            <button onClick={() => setWorkoutModal(true)} className="w-full mt-2 bg-lime-400 text-black rounded-2xl py-3.5 font-bold text-sm flex items-center justify-center gap-2 uppercase tracking-wide">
-              <IconPlus size={16} /> Log workout
-            </button>
-          </div>
-        )}
-
-        {tab === "weight" && (
-          <div>
-            <div className="flex gap-2 mb-4">
-              <input value={weightInput} onChange={(e) => setWeightInput(e.target.value)} placeholder={`Today's weight (${unit})`} inputMode="decimal"
-                className="flex-1 bg-white border-2 border-zinc-300 focus:border-lime-500 rounded-xl px-3 py-3 text-sm text-black font-medium outline-none placeholder:text-zinc-400" />
-              <button onClick={logWeight} className="bg-lime-400 text-black rounded-xl px-5 font-bold text-sm uppercase">Log</button>
-            </div>
-
-            {currentDisplay !== null && (
-              <div className="flex gap-2 mb-4">
-                <div className="flex-1 bg-zinc-900 rounded-xl p-3 text-center border border-zinc-800">
-                  <div className="font-mono font-bold text-lg text-white">{currentDisplay}</div>
-                  <div className="text-xs text-zinc-400 uppercase">Current ({unit})</div>
-                </div>
-                <div className="flex-1 bg-zinc-900 rounded-xl p-3 text-center border border-zinc-800">
-                  <div className="font-mono font-bold text-lg text-white">{(currentDisplay - displayWeights[0].display).toFixed(1)}</div>
-                  <div className="text-xs text-zinc-400 uppercase">Since start</div>
-                </div>
-              </div>
-            )}
-
-            {displayWeights.length >= 2 && (
-              <div className="bg-zinc-900 rounded-2xl p-3 border border-zinc-800 mb-4">
-                <MiniLineChart data={displayWeights} dataKey="display" labelKey="date" />
-              </div>
-            )}
-
-            {displayWeights.length === 0 && <div className="text-center text-zinc-500 text-sm mt-8 mb-4">No weight logged yet.</div>}
-
-            {[...displayWeights].reverse().map((w) => (
-              <div key={w.id} className="flex justify-between bg-zinc-900 rounded-xl px-4 py-3 mb-1.5 border border-zinc-800">
-                <span className="text-sm text-zinc-300">{w.date}</span>
-                <span className="text-sm font-mono font-bold text-white">{w.display} {unit}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex border-t border-zinc-800 bg-black">
-        {TABS.map(({ key, label, icon: TabIcon }) => (
-          <button key={key} onClick={() => setTab(key)} className={`flex-1 py-3 flex flex-col items-center gap-1 ${tab === key ? "text-lime-400" : "text-zinc-500"}`}>
-            <TabIcon size={19} />
-            <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
-          </button>
-        ))}
-      </div>
-
-      {foodModalOpen && (
-        <Modal title="Log food" onClose={() => setFoodModalOpen(false)}>
-          <AddFoodFlow onAdd={addFood} knownFoods={knownFoods} />
-        </Modal>
-      )}
-      {workoutModal && (
-        <Modal title="Log workout" onClose={() => setWorkoutModal(false)}>
-          <AddWorkoutForm onAdd={addWorkout} knownWorkouts={knownWorkouts} />
-        </Modal>
-      )}
-      {goalModalOpen && (
-        <Modal title="Edit goals" onClose={() => setGoalModalOpen(false)}>
-          <EditGoalsForm goals={goals} unit={unit} onSave={(g) => { setGoals(g); setGoalModalOpen(false); }} />
-        </Modal>
-      )}
-      {summariesOpen && <SummariesModal weeklySummaries={weeklySummaries} monthlySummaries={monthlySummaries} onClose={() => setSummariesOpen(false)} />}
-      {settingsOpen && (
-        <Modal title="Settings" onClose={() => setSettingsOpen(false)}>
-          <div className="text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Weight unit</div>
-          <Segmented options={["kg", "lbs"]} value={unit} onChange={setUnit} />
-          <p className="text-zinc-500 text-xs">Existing entries convert automatically.</p>
-        </Modal>
-      )}
-    </div>
+  var headerLogo = h("svg", { width: 14, height: 14, viewBox: "0 0 64 64" },
+    h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#27272a", strokeWidth: 10 }),
+    h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#a3e635", strokeWidth: 10, strokeDasharray: 2 * Math.PI * 26, strokeDashoffset: 2 * Math.PI * 26 * 0.3, strokeLinecap: "round", transform: "rotate(-90 32 32)" })
   );
+
+  var header = h("div", { className: "header" },
+    h("div", null,
+      h("div", { className: "row gap-1-5 mb-0-5" }, headerLogo, h("span", { className: "brand" }, "Datum")),
+      h("div", { className: "page-title" },
+        tab === "dashboard" ? "Today" : tab === "food" ? "Food Log" : tab === "workouts" ? "Training" : "Weight"
+      )
+    ),
+    h("div", { className: "row gap-2" },
+      h("button", { onClick: function () { setSummariesOpen(true); }, className: "icon-btn" }, Icon("🕐", 16)),
+      h("button", { onClick: function () { setSettingsOpen(true); }, className: "icon-btn" }, Icon("⚙️", 16))
+    )
+  );
+
+  var dashboardBody = tab !== "dashboard" ? null : h("div", null,
+    h("div", { className: "counter-card" },
+      h("div", { className: "counter-number" }, Math.round(totals.calories), h("span", { className: "counter-goal" }, "/" + goals.calorieGoal)),
+      h("div", { className: "counter-label" }, "calories consumed today")
+    ),
+    h(GoalCard, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg, sessionsThisWeek: sessionsThisWeek, onEdit: function () { setGoalModalOpen(true); } }),
+    h("div", { className: "card mb-4" },
+      h("div", { className: "row-between mb-3" }, h("span", { className: "card-title" }, "Today's workout")),
+      todaysWorkouts.length === 0
+        ? h("p", { className: "hint mb-3" }, "No workout logged today.")
+        : h("div", { className: "mb-3" }, todaysWorkouts.map(function (w) {
+            return h("div", { key: w.id, className: "workout-row" },
+              h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
+              h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
+            );
+          })),
+      h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary" }, Icon("➕", 16), " Log workout")
+    ),
+    h("div", { className: "card mb-4" },
+      h("div", { className: "row-between mb-3" },
+        h("span", { className: "card-title" }, "Nutrition"),
+        h("span", { className: "value-mono" }, Math.round(totals.calories) + " cal today")
+      ),
+      h(MacroBar, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
+      h(MacroBar, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
+      h(MacroBar, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
+      h(MacroBar, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" }),
+      h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mt-1" }, Icon("➕", 16), " Log food")
+    )
+  );
+
+  var foodBody = tab !== "food" ? null : h("div", null,
+    MEALS.map(function (meal) {
+      var entries = todaysFood.filter(function (e) { return e.meal === meal; });
+      var cals = entries.reduce(function (s, e) { return s + e.calories; }, 0);
+      return h("div", { key: meal, className: "card mb-3" },
+        h("div", { className: "row-between mb-2" }, h("span", { className: "card-title" }, meal), h("span", { className: "value-mono" }, cals + " cal")),
+        entries.map(function (e) {
+          return h("div", { key: e.id, className: "food-row", onDoubleClick: function () { removeFood(e.id); } },
+            h("div", null,
+              h("div", { className: "item-title" }, e.name),
+              h("div", { className: "hint" }, "P " + e.protein + "g · C " + e.carbs + "g (sugar " + e.sugar + "g) · F " + e.fat + "g")
+            ),
+            h("div", { className: "value-mono text-lime" }, e.calories)
+          );
+        })
+      );
+    }),
+    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary" }, Icon("➕", 16), " Log food")
+  );
+
+  var workoutsBody = tab !== "workouts" ? null : h("div", null,
+    h("div", { className: "card center mb-4" },
+      h("div", { className: "big-number" }, todaysWorkouts.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)),
+      h("div", { className: "counter-label" }, "calories burned today")
+    ),
+    h("div", { className: "card mb-4" },
+      h("div", { className: "row-between mb-1" },
+        h("span", { className: "label-sm" }, "This week"),
+        h("span", { className: "value-mono" }, sessionsThisWeek + " / " + goals.workoutDays + " sessions")
+      ),
+      h(ProgressBar, { pct: goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0, color: "#fb923c" })
+    ),
+    todaysWorkouts.map(function (w) {
+      return h("div", { key: w.id, className: "card row-between mb-2", onDoubleClick: function () { removeWorkout(w.id); } },
+        h("div", null, h("div", { className: "item-title-bold" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min · double-tap to remove")),
+        h("div", { className: "value-mono text-lime" }, w.caloriesBurned)
+      );
+    }),
+    todaysWorkouts.length === 0 ? h("div", { className: "empty-state" }, "No workouts logged today.") : null,
+    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mt-2" }, Icon("➕", 16), " Log workout")
+  );
+
+  var weightBody = tab !== "weight" ? null : h("div", null,
+    h("div", { className: "row gap-2 mb-4" },
+      h("input", {
+        value: weightInput, onChange: function (e) { setWeightInput(e.target.value); },
+        placeholder: "Today's weight (" + unit + ")", inputMode: "decimal", className: "weight-input"
+      }),
+      h("button", { onClick: logWeight, className: "log-btn" }, "Log")
+    ),
+    currentDisplay !== null ? h("div", { className: "row gap-2 mb-4" },
+      h("div", { className: "stat-box" }, h("div", { className: "stat-num" }, currentDisplay), h("div", { className: "hint" }, "Current (" + unit + ")")),
+      h("div", { className: "stat-box" }, h("div", { className: "stat-num" }, (currentDisplay - displayWeights[0].display).toFixed(1)), h("div", { className: "hint" }, "Since start"))
+    ) : null,
+    displayWeights.length >= 2 ? h("div", { className: "card mb-4" }, h(SimpleLineChart, { data: displayWeights, dataKey: "display", labelKey: "day", height: 200 })) : null,
+    displayWeights.length === 0 ? h("div", { className: "empty-state" }, "No weight logged yet.") : null,
+    displayWeights.slice().reverse().map(function (w) {
+      return h("div", { key: w.id, className: "weight-row" },
+        h("span", { className: "hint" }, w.date),
+        h("span", { className: "value-mono-bold" }, w.display + " " + unit)
+      );
+    })
+  );
+
+  var tabBar = h("div", { className: "tabbar" },
+    TABS.map(function (t) {
+      return h("button", {
+        key: t.key, onClick: function () { setTab(t.key); },
+        className: "tab-btn" + (tab === t.key ? " tab-btn-active" : "")
+      }, Icon(t.glyph, 19), h("span", { className: "tab-label" }, t.label));
+    })
+  );
+
+  var modals = h(React.Fragment, null,
+    foodModalOpen ? h(Modal, { title: "Log food", onClose: function () { setFoodModalOpen(false); } }, h(AddFoodFlow, { onAdd: addFood, knownFoods: knownFoods })) : null,
+    workoutModal ? h(Modal, { title: "Log workout", onClose: function () { setWorkoutModal(false); } }, h(AddWorkoutForm, { onAdd: addWorkout, knownWorkouts: knownWorkouts })) : null,
+    goalModalOpen ? h(Modal, { title: "Edit goals", onClose: function () { setGoalModalOpen(false); } }, h(EditGoalsForm, { goals: goals, unit: unit, onSave: function (g) { setGoals(g); setGoalModalOpen(false); } })) : null,
+    summariesOpen ? h(SummariesModal, { weeklySummaries: weeklySummaries, monthlySummaries: monthlySummaries, onClose: function () { setSummariesOpen(false); } }) : null,
+    settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
+      h("div", { className: "label-sm mb-2" }, "Weight unit"),
+      h(Segmented, { options: ["kg", "lbs"], value: unit, onChange: setUnit }),
+      h("p", { className: "hint" }, "Existing entries convert automatically."),
+      !useRealStorage ? h("p", { className: "hint mt-2", style: { color: "#fb923c" } }, "Note: this preview can't access persistent storage here, so entries won't be saved between reloads. Once hosted in a real browser, your data will save normally.") : null
+    ) : null
+  );
+
+  return h("div", { className: "app-shell" }, header, h("div", { className: "app-body" }, dashboardBody, foodBody, workoutsBody, weightBody), tabBar, modals);
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<FitTracker />);
+var rootEl = document.getElementById("root");
+ReactDOM.createRoot(rootEl).render(h(Datum));
+
+}
+
+</script>
+<script>
+  tryLoadFrom(0);
 </script>
 </body>
 </html>

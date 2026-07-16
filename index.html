@@ -28,6 +28,16 @@ button { cursor: pointer; border: none; background: none; }
 .header { padding: 1.5rem 1.25rem 0.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
 .brand { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; color: #a3e635; font-weight: 700; text-transform: uppercase; }
 .page-title { font-family: 'Archivo Black', 'Inter', sans-serif; font-size: 1.25rem; color: #fff; text-transform: uppercase; letter-spacing: -0.025em; }
+.page-title-row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+.header-clock { font-family: 'JetBrains Mono', monospace; font-size: 0.6875rem; color: #71717a; }
+
+.date-nav { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; }
+.date-nav-arrow { font-size: 1.5rem; color: #a3e635; padding: 0 0.5rem; line-height: 1; }
+.date-nav-arrow:disabled { color: #3f3f46; }
+.date-nav-label { font-size: 0.9375rem; font-weight: 700; color: #fff; background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem; padding: 0.5rem 1rem; }
+.date-nav-hidden-input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+
+.history-row { width: 100%; display: flex; justify-content: space-between; align-items: center; background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 0.5rem; text-align: left; }
 
 .row { display: flex; align-items: center; }
 .row-between { display: flex; align-items: center; justify-content: space-between; }
@@ -262,6 +272,19 @@ function isLastDayOfMonth(d) {
   next.setDate(next.getDate() + 1);
   return next.getDate() === 1;
 }
+function formatShortDate(key) {
+  var d = new Date(key + "T00:00:00");
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
+function formatTime(d) {
+  d = d || new Date();
+  return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
+function addDays(key, delta) {
+  var d = new Date(key + "T00:00:00");
+  d.setDate(d.getDate() + delta);
+  return dateKey(d);
+}
 
 var MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 
@@ -388,6 +411,7 @@ function AddFoodFlow(props) {
   var sSugar = useState(""), sugar = sSugar[0], setSugar = sSugar[1];
   var sFat = useState(""), fat = sFat[0], setFat = sFat[1];
   var sWeight = useState(""), foodWeight = sWeight[0], setFoodWeight = sWeight[1];
+  var sWeightUnit = useState("g"), weightUnit = sWeightUnit[0], setWeightUnit = sWeightUnit[1];
   var sScan = useState("idle"), scanStep = sScan[0], setScanStep = sScan[1];
 
   function fillFrom(food) {
@@ -411,7 +435,7 @@ function AddFoodFlow(props) {
     if (entryMode === "Per 100g") {
       if (!calories || !weightNum) return;
       props.onAdd(meal, {
-        name: name.trim() + " (" + weightNum + "g)",
+        name: name.trim() + " (" + weightNum + weightUnit + ")",
         calories: computed.calories, protein: computed.protein,
         carbs: computed.carbs, sugar: computed.sugar, fat: computed.fat
       });
@@ -483,17 +507,21 @@ function AddFoodFlow(props) {
         ),
         h(Field, { label: "Fat (g)", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" })
       ) : h("div", null,
-        h("p", { className: "hint mb-2" }, "Enter the nutrition label's per-100g values, then the actual weight you're eating — the totals below are calculated automatically."),
-        h("div", { className: "grid-2" },
-          h(Field, { label: "Calories / 100g", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Protein / 100g", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Carbs / 100g", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Sugar / 100g", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+        h("p", { className: "hint mb-2" }, "Enter the nutrition label's per-100" + weightUnit + " values, then the actual amount you're having — the totals below are calculated automatically."),
+        h("div", { className: "row-between mb-2" },
+          h("span", { className: "label-sm" }, "Measured in"),
+          h("div", { style: { width: "8rem" } }, h(Segmented, { options: ["g", "ml"], value: weightUnit, onChange: setWeightUnit }))
         ),
-        h(Field, { label: "Fat / 100g", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Weight eaten (g)", value: foodWeight, onChange: function (e) { setFoodWeight(e.target.value); }, placeholder: "e.g. 300", inputMode: "decimal" }),
+        h("div", { className: "grid-2" },
+          h(Field, { label: "Calories / 100" + weightUnit, value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Protein / 100" + weightUnit, value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Carbs / 100" + weightUnit, value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+          h(Field, { label: "Sugar / 100" + weightUnit, value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
+        ),
+        h(Field, { label: "Fat / 100" + weightUnit, value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
+        h(Field, { label: "Amount (" + weightUnit + ")", value: foodWeight, onChange: function (e) { setFoodWeight(e.target.value); }, placeholder: weightUnit === "g" ? "e.g. 300" : "e.g. 250", inputMode: "decimal" }),
         computed ? h("div", { className: "computed-box" },
-          h("div", { className: "label-sm mb-1" }, "Calculated totals for " + (weightNum || 0) + "g"),
+          h("div", { className: "label-sm mb-1" }, "Calculated totals for " + (weightNum || 0) + weightUnit),
           h("div", { className: "hint" }, computed.calories + " cal · P " + computed.protein + "g · C " + computed.carbs + "g · Sugar " + computed.sugar + "g · F " + computed.fat + "g")
         ) : null
       ),
@@ -588,6 +616,70 @@ function GoalCard(props) {
   );
 }
 
+function DateNav(props) {
+  var selectedDate = props.selectedDate, onChange = props.onChange;
+  var isToday = selectedDate === dateKey();
+  var inputRef = useRef(null);
+  function openPicker() {
+    if (inputRef.current) {
+      if (inputRef.current.showPicker) { try { inputRef.current.showPicker(); } catch (e) { inputRef.current.focus(); } }
+      else { inputRef.current.focus(); }
+    }
+  }
+  return h("div", { className: "date-nav" },
+    h("button", { onClick: function () { onChange(addDays(selectedDate, -1)); }, className: "date-nav-arrow" }, "‹"),
+    h("button", { onClick: openPicker, className: "date-nav-label" }, isToday ? "Today" : formatShortDate(selectedDate)),
+    h("input", {
+      ref: inputRef, type: "date", value: selectedDate, max: dateKey(),
+      onChange: function (e) { if (e.target.value) onChange(e.target.value); },
+      className: "date-nav-hidden-input"
+    }),
+    h("button", { onClick: function () { if (!isToday) onChange(addDays(selectedDate, 1)); }, disabled: isToday, className: "date-nav-arrow" }, "›")
+  );
+}
+
+function FoodHistoryModal(props) {
+  var days = props.days; // [{date, calories, count}]
+  return h(Modal, { title: "Logged days", onClose: props.onClose },
+    days.length === 0 ? h("p", { className: "hint" }, "No days logged yet.") : null,
+    days.map(function (d) {
+      return h("button", { key: d.date, onClick: function () { props.onSelect(d.date); }, className: "history-row" },
+        h("div", null,
+          h("div", { className: "item-title-bold" }, formatShortDate(d.date)),
+          h("div", { className: "hint" }, d.count + " item" + (d.count === 1 ? "" : "s") + " logged")
+        ),
+        h("div", { className: "value-mono text-lime" }, d.calories + " cal")
+      );
+    })
+  );
+}
+
+function WorkoutHistoryModal(props) {
+  var days = props.days, weeklySummaries = props.weeklySummaries;
+  return h(Modal, { title: "Workout history", onClose: props.onClose },
+    h("div", { className: "row gap-2 mb-2" }, Icon("📅", 14, "text-lime"), h("span", { className: "card-title" }, "This week")),
+    days.length === 0 ? h("p", { className: "hint mb-4" }, "No workouts logged yet this week.") : null,
+    days.map(function (d) {
+      return h("button", { key: d.date, onClick: function () { props.onSelect(d.date); }, className: "history-row" },
+        h("div", null,
+          h("div", { className: "item-title-bold" }, formatShortDate(d.date)),
+          h("div", { className: "hint" }, d.count + " workout" + (d.count === 1 ? "" : "s"))
+        ),
+        h("div", { className: "value-mono text-orange" }, d.caloriesBurned + " cal")
+      );
+    }),
+    h("div", { className: "row gap-2 mt-5 mb-2" }, Icon("📊", 14, "text-lime"), h("span", { className: "card-title" }, "Previous weeks")),
+    weeklySummaries.length === 0
+      ? h("p", { className: "hint" }, "Once a week ends (Sunday night), it's automatically rolled up here as a weekly overview instead of individual days.")
+      : weeklySummaries.slice().reverse().map(function (s) {
+          return h("div", { key: s.weekKey, className: "summary-item" },
+            h("div", { className: "summary-title" }, "Week of " + s.weekKey),
+            h("div", { className: "summary-line" }, s.workoutCount + " workouts · " + s.caloriesBurned + " cal burned")
+          );
+        })
+  );
+}
+
 function SummariesModal(props) {
   return h(Modal, { title: "History", onClose: props.onClose },
     h("div", { className: "row gap-2 mb-2" }, Icon("🕐", 14, "text-lime"), h("span", { className: "card-title" }, "Weekly summaries")),
@@ -643,6 +735,15 @@ function Datum() {
   var sWeightInput = useState(""), weightInput = sWeightInput[0], setWeightInput = sWeightInput[1];
   var sImportMsg = useState(""), importMessage = sImportMsg[0], setImportMessage = sImportMsg[1];
   var fileInputRef = useRef(null);
+  var sSelectedDate = useState(function () { return dateKey(); }), selectedDate = sSelectedDate[0], setSelectedDate = sSelectedDate[1];
+  var sFoodHistoryOpen = useState(false), foodHistoryOpen = sFoodHistoryOpen[0], setFoodHistoryOpen = sFoodHistoryOpen[1];
+  var sWorkoutHistoryOpen = useState(false), workoutHistoryOpen = sWorkoutHistoryOpen[0], setWorkoutHistoryOpen = sWorkoutHistoryOpen[1];
+  var sNow = useState(function () { return new Date(); }), nowClock = sNow[0], setNowClock = sNow[1];
+
+  useEffect(function () {
+    var id = setInterval(function () { setNowClock(new Date()); }, 30000);
+    return function () { clearInterval(id); };
+  }, []);
 
   useEffect(function () { saveKey("foodEntries", foodEntries); }, [foodEntries]);
   useEffect(function () { saveKey("workouts", workouts); }, [workouts]);
@@ -695,14 +796,26 @@ function Datum() {
   }, [foodEntries, workouts]);
 
   var today = dateKey();
-  var todaysFood = useMemo(function () { return foodEntries.filter(function (e) { return e.date === today; }); }, [foodEntries, today]);
-  var todaysWorkouts = useMemo(function () { return workouts.filter(function (w) { return w.date === today; }); }, [workouts, today]);
+  var viewedFood = useMemo(function () { return foodEntries.filter(function (e) { return e.date === selectedDate; }); }, [foodEntries, selectedDate]);
+  var viewedWorkouts = useMemo(function () { return workouts.filter(function (w) { return w.date === selectedDate; }); }, [workouts, selectedDate]);
 
   var totals = useMemo(function () {
-    return todaysFood.reduce(function (a, e) {
+    return viewedFood.reduce(function (a, e) {
       return { calories: a.calories + e.calories, protein: a.protein + e.protein, carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat };
     }, { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
-  }, [todaysFood]);
+  }, [viewedFood]);
+
+  var foodHistoryDays = useMemo(function () {
+    var byDate = new Map();
+    foodEntries.forEach(function (e) {
+      var entry = byDate.get(e.date) || { date: e.date, calories: 0, count: 0 };
+      entry.calories += e.calories; entry.count += 1;
+      byDate.set(e.date, entry);
+    });
+    return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; }).map(function (d) {
+      return { date: d.date, calories: Math.round(d.calories), count: d.count };
+    });
+  }, [foodEntries]);
 
   var knownFoods = useMemo(function () {
     var byName = new Map();
@@ -726,16 +839,42 @@ function Datum() {
     return workouts.filter(function (w) { return new Date(w.date) >= wk; }).length;
   }, [workouts]);
 
+  var weekWorkoutsByDay = useMemo(function () {
+    var wk = startOfWeek();
+    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
+    var byDate = new Map();
+    inWeek.forEach(function (w) {
+      var list = byDate.get(w.date) || [];
+      list.push(w);
+      byDate.set(w.date, list);
+    });
+    return Array.from(byDate.entries())
+      .sort(function (a, b) { return a[0] < b[0] ? 1 : -1; })
+      .map(function (pair) { return { date: pair[0], items: pair[1] }; });
+  }, [workouts]);
+
+  var workoutHistoryDays = useMemo(function () {
+    var wk = startOfWeek();
+    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
+    var byDate = new Map();
+    inWeek.forEach(function (w) {
+      var entry = byDate.get(w.date) || { date: w.date, caloriesBurned: 0, count: 0 };
+      entry.caloriesBurned += w.caloriesBurned; entry.count += 1;
+      byDate.set(w.date, entry);
+    });
+    return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  }, [workouts]);
+
   function addFood(meal, entry) {
     var now = new Date();
-    setFoodEntries(function (prev) { return prev.concat([Object.assign({ id: uid(), meal: meal, date: dateKey(now), timestamp: now.getTime() }, entry)]); });
+    setFoodEntries(function (prev) { return prev.concat([Object.assign({ id: uid(), meal: meal, date: selectedDate, timestamp: now.getTime() }, entry)]); });
     setFoodModalOpen(false);
   }
   function removeFood(id) { setFoodEntries(function (prev) { return prev.filter(function (e) { return e.id !== id; }); }); }
 
   function addWorkout(entry) {
     var now = new Date();
-    setWorkouts(function (prev) { return prev.concat([Object.assign({ id: uid(), date: dateKey(now), timestamp: now.getTime() }, entry)]); });
+    setWorkouts(function (prev) { return prev.concat([Object.assign({ id: uid(), date: selectedDate, timestamp: now.getTime() }, entry)]); });
     setWorkoutModal(false);
   }
   function removeWorkout(id) { setWorkouts(function (prev) { return prev.filter(function (w) { return w.id !== id; }); }); }
@@ -799,8 +938,11 @@ function Datum() {
   var header = h("div", { className: "header" },
     h("div", null,
       h("div", { className: "row gap-1-5 mb-0-5" }, headerLogo, h("span", { className: "brand" }, "Datum")),
-      h("div", { className: "page-title" },
-        tab === "dashboard" ? "Today" : tab === "food" ? "Food Log" : tab === "workouts" ? "Training" : "Weight"
+      h("div", { className: "page-title-row" },
+        h("span", { className: "page-title" },
+          tab === "dashboard" ? "Today" : tab === "food" ? "Food Log" : tab === "workouts" ? "Training" : "Weight"
+        ),
+        h("span", { className: "header-clock" }, formatShortDate(dateKey(nowClock)) + " · " + formatTime(nowClock))
       )
     ),
     h("div", { className: "row gap-2" },
@@ -810,9 +952,10 @@ function Datum() {
   );
 
   var dashboardBody = tab !== "dashboard" ? null : h("div", null,
+    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
     h("div", { className: "counter-card" },
       h("div", { className: "counter-number" }, Math.round(totals.calories), h("span", { className: "counter-goal" }, "/" + goals.calorieGoal)),
-      h("div", { className: "counter-label" }, "calories consumed today")
+      h("div", { className: "counter-label" }, selectedDate === today ? "calories consumed today" : "calories consumed on " + formatShortDate(selectedDate))
     ),
     h(GoalCard, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg, sessionsThisWeek: sessionsThisWeek, onEdit: function () { setGoalModalOpen(true); } }),
     h("div", { className: "card mb-4" },
@@ -827,11 +970,11 @@ function Datum() {
     ),
     h("div", { className: "card mb-4" },
       h("div", { className: "row-between mb-3" },
-        h("span", { className: "card-title" }, "Today's workout")
+        h("span", { className: "card-title" }, selectedDate === today ? "Today's workout" : "Workout")
       ),
-      todaysWorkouts.length === 0
-        ? h("p", { className: "hint mb-3" }, "No workout logged today.")
-        : h("div", { className: "mb-3" }, todaysWorkouts.map(function (w) {
+      viewedWorkouts.length === 0
+        ? h("p", { className: "hint mb-3" }, selectedDate === today ? "No workout logged today." : "No workout logged this day.")
+        : h("div", { className: "mb-3" }, viewedWorkouts.map(function (w) {
             return h("div", { key: w.id, className: "workout-row" },
               h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
               h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
@@ -842,8 +985,9 @@ function Datum() {
   );
 
   var foodBody = tab !== "food" ? null : h("div", null,
+    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
     MEALS.map(function (meal) {
-      var entries = todaysFood.filter(function (e) { return e.meal === meal; });
+      var entries = viewedFood.filter(function (e) { return e.meal === meal; });
       var cals = entries.reduce(function (s, e) { return s + e.calories; }, 0);
       return h("div", { key: meal, className: "card mb-3" },
         h("div", { className: "row-between mb-2" }, h("span", { className: "card-title" }, meal), h("span", { className: "value-mono" }, cals + " cal")),
@@ -858,13 +1002,15 @@ function Datum() {
         })
       );
     }),
-    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary" }, Icon("➕", 16), " Log food")
+    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log food"),
+    h("button", { onClick: function () { setFoodHistoryOpen(true); }, className: "list-btn" }, Icon("🕐", 15), "  View history")
   );
 
   var workoutsBody = tab !== "workouts" ? null : h("div", null,
+    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
     h("div", { className: "card center mb-4" },
-      h("div", { className: "big-number" }, todaysWorkouts.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)),
-      h("div", { className: "counter-label" }, "calories burned today")
+      h("div", { className: "big-number" }, viewedWorkouts.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)),
+      h("div", { className: "counter-label" }, selectedDate === today ? "calories burned today" : "calories burned this day")
     ),
     h("div", { className: "card mb-4" },
       h("div", { className: "row-between mb-1" },
@@ -873,14 +1019,33 @@ function Datum() {
       ),
       h(ProgressBar, { pct: goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0, color: "#fb923c" })
     ),
-    todaysWorkouts.map(function (w) {
+    viewedWorkouts.map(function (w) {
       return h("div", { key: w.id, className: "card row-between mb-2", onDoubleClick: function () { removeWorkout(w.id); } },
         h("div", null, h("div", { className: "item-title-bold" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min · double-tap to remove")),
         h("div", { className: "value-mono text-lime" }, w.caloriesBurned)
       );
     }),
-    todaysWorkouts.length === 0 ? h("div", { className: "empty-state" }, "No workouts logged today.") : null,
-    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mt-2" }, Icon("➕", 16), " Log workout")
+    viewedWorkouts.length === 0 ? h("div", { className: "empty-state" }, "No workouts logged this day.") : null,
+    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mt-2 mb-2" }, Icon("➕", 16), " Log workout"),
+    h("button", { onClick: function () { setWorkoutHistoryOpen(true); }, className: "list-btn mb-4" }, Icon("🕐", 15), "  View history"),
+
+    h("div", { className: "label-sm mb-2" }, "This week"),
+    weekWorkoutsByDay.length === 0 ? h("p", { className: "hint" }, "Nothing logged yet this week.") : null,
+    weekWorkoutsByDay.map(function (group) {
+      var dayTotal = group.items.reduce(function (s, w) { return s + w.caloriesBurned; }, 0);
+      return h("div", { key: group.date, className: "card mb-3" },
+        h("div", { className: "row-between mb-2" },
+          h("span", { className: "card-title" }, group.date === today ? "Today" : formatShortDate(group.date)),
+          h("span", { className: "value-mono" }, dayTotal + " cal")
+        ),
+        group.items.map(function (w) {
+          return h("div", { key: w.id, className: "workout-row" },
+            h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
+            h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
+          );
+        })
+      );
+    })
   );
 
   var weightBody = tab !== "weight" ? null : h("div", null,
@@ -919,6 +1084,14 @@ function Datum() {
     workoutModal ? h(Modal, { title: "Log workout", onClose: function () { setWorkoutModal(false); } }, h(AddWorkoutForm, { onAdd: addWorkout, knownWorkouts: knownWorkouts })) : null,
     goalModalOpen ? h(Modal, { title: "Edit goals", onClose: function () { setGoalModalOpen(false); } }, h(EditGoalsForm, { goals: goals, unit: unit, onSave: function (g) { setGoals(g); setGoalModalOpen(false); } })) : null,
     summariesOpen ? h(SummariesModal, { weeklySummaries: weeklySummaries, monthlySummaries: monthlySummaries, onClose: function () { setSummariesOpen(false); } }) : null,
+    foodHistoryOpen ? h(FoodHistoryModal, {
+      days: foodHistoryDays, onClose: function () { setFoodHistoryOpen(false); },
+      onSelect: function (date) { setSelectedDate(date); setFoodHistoryOpen(false); }
+    }) : null,
+    workoutHistoryOpen ? h(WorkoutHistoryModal, {
+      days: workoutHistoryDays, weeklySummaries: weeklySummaries, onClose: function () { setWorkoutHistoryOpen(false); },
+      onSelect: function (date) { setSelectedDate(date); setWorkoutHistoryOpen(false); }
+    }) : null,
     settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
       h("div", { className: "label-sm mb-2" }, "Weight unit"),
       h(Segmented, { options: ["kg", "lbs"], value: unit, onChange: setUnit }),

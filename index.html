@@ -111,10 +111,20 @@ button { cursor: pointer; border: none; background: none; }
 
 .food-row { display: flex; justify-content: space-between; padding: 0.625rem 0; border-top: 1px solid #27272a; }
 
-.counter-card { background: #18181b; border-radius: 1.5rem; padding: 1.5rem; text-align: center; margin-bottom: 1rem; border: 1px solid #27272a; }
-.counter-number { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 700; color: #a3e635; line-height: 1; }
-.counter-goal { font-size: 1.5rem; color: #71717a; }
-.counter-label { font-size: 0.75rem; color: #a1a1aa; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.counter-card { background: #18181b; border-radius: 1.5rem; padding: 1.5rem; text-align: center; margin-bottom: 1rem; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; }
+.counter-number { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; color: #a3e635; line-height: 1; }
+.counter-goal { font-size: 1rem; color: #71717a; }
+.counter-label { font-size: 0.6875rem; color: #a1a1aa; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.ring-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-calorie-center { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+.macro-ring-row { display: flex; justify-content: space-between; gap: 0.25rem; margin-bottom: 1rem; }
+.macro-ring-item { display: flex; flex-direction: column; align-items: center; flex: 1 1 0%; }
+.macro-ring-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #fff; }
+.macro-ring-label { font-size: 0.6875rem; font-weight: 600; color: #d4d4d8; text-transform: uppercase; letter-spacing: 0.02em; margin-top: 0.375rem; }
+.macro-ring-value { font-family: 'JetBrains Mono', monospace; font-size: 0.625rem; color: #71717a; margin-top: 0.125rem; }
 .big-number { font-family: 'JetBrains Mono', monospace; font-size: 2.25rem; font-weight: 700; color: #a3e635; }
 
 .stat-box { flex: 1 1 0%; background: #18181b; border-radius: 0.75rem; padding: 0.75rem; text-align: center; border: 1px solid #27272a; }
@@ -338,14 +348,35 @@ function ProgressBar(props) {
   );
 }
 
-function MacroBar(props) {
-  var pct = props.goal > 0 ? Math.min(100, (props.current / props.goal) * 100) : 0;
-  return h("div", { className: "mb-3" },
-    h("div", { className: "row-between mb-1" },
-      h("span", { className: "label-sm" }, props.label),
-      h("span", { className: "value-mono" }, Math.round(props.current) + " / " + props.goal + "g")
+function ProgressRing(props) {
+  var size = props.size || 64, stroke = props.stroke || 8;
+  var pct = Math.max(0, Math.min(100, props.pct || 0));
+  var r = (size - stroke) / 2;
+  var c = 2 * Math.PI * r;
+  var offset = c - (pct / 100) * c;
+  var half = size / 2;
+  return h("div", { className: "ring-wrap", style: { width: size, height: size } },
+    h("svg", { width: size, height: size, viewBox: "0 0 " + size + " " + size },
+      h("circle", { cx: half, cy: half, r: r, fill: "none", stroke: props.trackColor || "#27272a", strokeWidth: stroke }),
+      h("circle", {
+        cx: half, cy: half, r: r, fill: "none", stroke: props.color || "#a3e635", strokeWidth: stroke,
+        strokeDasharray: c, strokeDashoffset: offset, strokeLinecap: "round",
+        transform: "rotate(-90 " + half + " " + half + ")"
+      })
     ),
-    h(ProgressBar, { pct: pct, color: props.color })
+    h("div", { className: "ring-center" }, props.children)
+  );
+}
+
+function MacroRing(props) {
+  var rawPct = props.goal > 0 ? (props.current / props.goal) * 100 : 0;
+  var fillPct = Math.min(100, rawPct);
+  return h("div", { className: "macro-ring-item" },
+    h(ProgressRing, { pct: fillPct, size: 62, stroke: 7, color: props.color },
+      h("span", { className: "macro-ring-pct" }, Math.round(rawPct) + "%")
+    ),
+    h("div", { className: "macro-ring-label" }, props.label),
+    h("div", { className: "macro-ring-value" }, Math.round(props.current) + "/" + props.goal + "g")
   );
 }
 
@@ -515,6 +546,18 @@ function AddFoodFlow(props) {
 
   function startScan() {
     setScanError("");
+
+    if (!window.isSecureContext) {
+      setScanStatus("error");
+      setScanError("Camera access requires a secure (https) connection. Make sure you're opening this page's https:// URL, not a plain http:// one.");
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setScanStatus("error");
+      setScanError("This browser doesn't expose camera access here — this is common in in-app browsers (Instagram, Facebook, TikTok, LinkedIn, etc. opening links in their own built-in browser instead of Safari/Chrome). Open this page directly in Safari or Chrome instead, or enter the food manually.");
+      return;
+    }
+
     setScanStatus("starting");
     loadHtml5Qrcode()
       .then(function () {
@@ -534,8 +577,16 @@ function AddFoodFlow(props) {
       .catch(function (err) {
         setScanStatus("error");
         var m = (err && err.message) || String(err);
-        if (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0) {
-          setScanError("Camera permission was denied. Allow camera access for this page and try again, or enter the food manually.");
+        var inIframe = false;
+        try { inIframe = window.self !== window.top; } catch (e) { inIframe = true; }
+        if (inIframe && (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0)) {
+          setScanError("Camera access is blocked here because this page is running inside an embedded preview (e.g. a chat window), which browsers don't allow camera access in by default — there's no permission prompt to accept because it's blocked before that point. This isn't a bug: scanning will work normally once this page is opened as its own tab. For now, enter the food manually.");
+        } else if (!inIframe && (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0)) {
+          setScanError(
+            "Camera access was denied instantly, without ever showing a permission prompt. This almost always means one of two things:\n\n" +
+            "1) You're opening this link inside an app's built-in browser (Instagram, Facebook, TikTok, LinkedIn, X, etc.) rather than Safari/Chrome directly — these in-app browsers commonly block camera access outright. Look for a \"open in browser\" / \"⋯\" menu option, or copy the link and paste it directly into Safari/Chrome.\n\n" +
+            "2) Your browser has a cached camera permission for this exact page from an earlier visit. Tap the site info / padlock icon next to the address bar → site settings → Camera → set to Allow (or \"reset permission\"), then reload the page and try again."
+          );
         } else if (m.indexOf("all sources failed") >= 0) {
           setScanError("Couldn't load the barcode scanner library (network/firewall issue). You can enter the food manually instead.");
         } else {
@@ -593,14 +644,29 @@ function AddFoodFlow(props) {
       ),
 
       scanStatus === "error" ? h("div", null,
-        h("p", { className: "hint mb-3", style: { color: "#f87171" } }, scanError),
+        h("p", { className: "hint mb-3", style: { color: "#f87171", whiteSpace: "pre-line" } }, scanError),
         h("button", { onClick: startScan, className: "scan-btn" }, "Try again"),
         h("button", { onClick: function () { setScanStatus("idle"); setMode("Manual"); }, className: "scan-btn" }, "Enter manually instead")
       ) : null
     ) : null,
 
     mode === "Manual" ? h("div", null,
-      h(Field, { label: "Food name", value: name, onChange: function (e) { setName(e.target.value); }, placeholder: "e.g. Grilled chicken" }),
+      h(Field, {
+        label: "Food name", value: name, list: "known-foods-list",
+        onChange: function (e) {
+          var v = e.target.value;
+          setName(v);
+          if (entryMode === "Total") {
+            var match = knownFoods.filter(function (f) { return f.name.toLowerCase() === v.toLowerCase(); })[0];
+            if (match) fillFrom(match);
+            else setName(v); // fillFrom already sets name; keep typed text if no exact match
+          }
+        },
+        placeholder: "e.g. Grilled chicken"
+      }),
+      h("datalist", { id: "known-foods-list" },
+        knownFoods.map(function (f) { return h("option", { key: f.name, value: f.name }); })
+      ),
       h(Segmented, { options: ["Total", "Per 100g"], value: entryMode, onChange: setEntryMode }),
 
       entryMode === "Total" ? h("div", null,
@@ -670,7 +736,19 @@ function AddWorkoutForm(props) {
       })
     ) : null,
     mode === "Manual" ? h("div", null,
-      h(Field, { label: "Activity name", value: name, onChange: function (e) { setName(e.target.value); }, placeholder: "e.g. Deadlift session" }),
+      h(Field, {
+        label: "Activity name", value: name, list: "known-workouts-list",
+        onChange: function (e) {
+          var v = e.target.value;
+          setName(v);
+          var match = knownWorkouts.filter(function (w) { return w.name.toLowerCase() === v.toLowerCase(); })[0];
+          if (match) fillFrom(match);
+        },
+        placeholder: "e.g. Deadlift session"
+      }),
+      h("datalist", { id: "known-workouts-list" },
+        knownWorkouts.map(function (w) { return h("option", { key: w.name, value: w.name }); })
+      ),
       h("div", { className: "grid-2" },
         h(Field, { label: "Duration (min)", value: duration, onChange: function (e) { setDuration(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
         h(Field, { label: "Calories burned", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" })
@@ -704,12 +782,6 @@ function GoalCard(props) {
         h("span", { className: "value-mono" }, currentDisplay != null ? (currentDisplay + " → " + targetDisplay + " " + unit) : ("Target: " + targetDisplay + " " + unit))
       ),
       startDisplay != null ? h(ProgressBar, { pct: weightPct, color: "#a3e635" }) : h("p", { className: "hint" }, "Log a weight entry to start tracking progress.")
-    ),
-    h("div", { className: "mb-4" },
-      h("div", { className: "row-between mb-1" },
-        h("span", { className: "label-sm" }, "Calories"),
-        h("span", { className: "value-mono" }, goals.calorieGoal + " / day")
-      )
     ),
     h("div", null,
       h("div", { className: "row-between mb-1" },
@@ -1058,35 +1130,50 @@ function Datum() {
 
   var dashboardBody = tab !== "dashboard" ? null : h("div", null,
     h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
-    h("div", { className: "counter-card" },
-      h("div", { className: "counter-number" }, Math.round(totals.calories), h("span", { className: "counter-goal" }, "/" + goals.calorieGoal)),
-      h("div", { className: "counter-label" }, selectedDate === today ? "calories consumed today" : "calories consumed on " + formatShortDate(selectedDate))
-    ),
+
     h(GoalCard, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg, sessionsThisWeek: sessionsThisWeek, onEdit: function () { setGoalModalOpen(true); } }),
+
+    h("div", { className: "counter-card" },
+      h(ProgressRing, {
+        pct: goals.calorieGoal > 0 ? (totals.calories / goals.calorieGoal) * 100 : 0,
+        size: 168, stroke: 15, color: "#a3e635"
+      },
+        h("div", { className: "ring-calorie-center" },
+          h("div", { className: "counter-number" }, Math.round(totals.calories), h("span", { className: "counter-goal" }, "/" + goals.calorieGoal)),
+          h("div", { className: "counter-label" }, selectedDate === today ? "calories today" : formatShortDate(selectedDate))
+        )
+      )
+    ),
+
     h("div", { className: "card mb-4" },
       h("div", { className: "row-between mb-3" },
         h("span", { className: "card-title" }, "Nutrition")
       ),
-      h(MacroBar, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
-      h(MacroBar, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
-      h(MacroBar, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
-      h(MacroBar, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" }),
-      h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mt-1" }, Icon("➕", 16), " Log food")
+      h("div", { className: "macro-ring-row" },
+        h(MacroRing, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
+        h(MacroRing, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
+        h(MacroRing, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
+        h(MacroRing, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" })
+      )
     ),
+
     h("div", { className: "card mb-4" },
       h("div", { className: "row-between mb-3" },
         h("span", { className: "card-title" }, selectedDate === today ? "Today's workout" : "Workout")
       ),
       viewedWorkouts.length === 0
-        ? h("p", { className: "hint mb-3" }, selectedDate === today ? "No workout logged today." : "No workout logged this day.")
-        : h("div", { className: "mb-3" }, viewedWorkouts.map(function (w) {
+        ? h("p", { className: "hint" }, selectedDate === today ? "No workout logged today." : "No workout logged this day.")
+        : h("div", null, viewedWorkouts.map(function (w) {
             return h("div", { key: w.id, className: "workout-row" },
               h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
               h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
             );
-          })),
-      h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary" }, Icon("➕", 16), " Log workout")
-    )
+          }))
+    ),
+
+    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log food"),
+    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log workout"),
+    h("button", { onClick: function () { setTab("weight"); }, className: "btn-primary" }, Icon("➕", 16), " Log weight")
   );
 
   var foodBody = tab !== "food" ? null : h("div", null,

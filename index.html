@@ -85,6 +85,8 @@ button { cursor: pointer; border: none; background: none; }
 .scan-box { text-align: center; padding: 1rem 0; }
 .scanning-text { color: #a3e635; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; letter-spacing: 0.1em; }
 .scan-btn { width: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 0.75rem; padding: 0.875rem; margin-bottom: 0.625rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #fff; font-weight: 600; font-size: 0.875rem; }
+.scan-camera { width: 100%; min-height: 220px; border-radius: 0.75rem; overflow: hidden; background: #000; border: 1px solid #3f3f46; }
+.scan-camera video { width: 100% !important; border-radius: 0.75rem; }
 .computed-box { background: #27272a; border: 1px solid #3f3f46; border-radius: 0.75rem; padding: 0.75rem; margin-top: 0.5rem; margin-bottom: 0.75rem; }
 
 .field-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 600; }
@@ -412,7 +414,10 @@ function AddFoodFlow(props) {
   var sFat = useState(""), fat = sFat[0], setFat = sFat[1];
   var sWeight = useState(""), foodWeight = sWeight[0], setFoodWeight = sWeight[1];
   var sWeightUnit = useState("g"), weightUnit = sWeightUnit[0], setWeightUnit = sWeightUnit[1];
-  var sScan = useState("idle"), scanStep = sScan[0], setScanStep = sScan[1];
+  var sScanStatus = useState("idle"), scanStatus = sScanStatus[0], setScanStatus = sScanStatus[1]; // idle | starting | scanning | looking-up | error
+  var sScanError = useState(""), scanError = sScanError[0], setScanError = sScanError[1];
+  var scanContainerId = useState(function () { return "scan-" + uid(); })[0];
+  var scannerRef = useRef(null);
 
   function fillFrom(food) {
     setName(food.name); setCalories(String(food.calories)); setProtein(String(food.protein));
@@ -451,13 +456,98 @@ function AddFoodFlow(props) {
       });
     }
   }
-  function mockScan(kind) {
-    setScanStep("scanning");
-    setTimeout(function () {
-      setName(kind === "barcode" ? "Scanned product" : "Label scan result");
-      setCalories("210"); setProtein("9"); setCarbs("27"); setSugar("11"); setFat("7");
-      setScanStep("idle"); setMode("Manual"); setEntryMode("Total");
-    }, 900);
+  function stopScanner() {
+    if (scannerRef.current) {
+      try { scannerRef.current.stop().then(function () { scannerRef.current.clear(); }).catch(function () {}); }
+      catch (e) {}
+      scannerRef.current = null;
+    }
+  }
+
+  useEffect(function () { return stopScanner; }, []); // stop camera if this form unmounts mid-scan
+  useEffect(function () { if (mode !== "Scan") stopScanner(); }, [mode]); // stop camera if user switches tabs mid-scan
+
+  function lookupBarcode(code) {
+    setScanStatus("looking-up");
+    fetch("https://world.openfoodfacts.org/api/v2/product/" + encodeURIComponent(code) + ".json")
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || data.status !== 1 || !data.product) {
+          setScanStatus("error");
+          setScanError("No product found for barcode " + code + ". You can enter it manually instead.");
+          return;
+        }
+        var p = data.product;
+        var n = p.nutriments || {};
+        setName(p.product_name || p.generic_name || ("Product " + code));
+        setCalories(String(Math.round(n["energy-kcal_100g"] != null ? n["energy-kcal_100g"] : (n["energy-kcal"] || 0))));
+        setProtein(String(n["proteins_100g"] != null ? n["proteins_100g"] : 0));
+        setCarbs(String(n["carbohydrates_100g"] != null ? n["carbohydrates_100g"] : 0));
+        setSugar(String(n["sugars_100g"] != null ? n["sugars_100g"] : 0));
+        setFat(String(n["fat_100g"] != null ? n["fat_100g"] : 0));
+        setFoodWeight("");
+        setWeightUnit("g");
+        setEntryMode("Per 100g");
+        setMode("Manual");
+        setScanStatus("idle");
+      })
+      .catch(function () {
+        setScanStatus("error");
+        setScanError("Couldn't reach the product database (network issue). You can enter the food manually instead.");
+      });
+  }
+
+  function loadHtml5Qrcode() {
+    if (typeof Html5Qrcode !== "undefined") return Promise.resolve();
+    var sources = [
+      "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js",
+      "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
+      "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+    ];
+    function tryIndex(i) {
+      if (i >= sources.length) return Promise.reject(new Error("all sources failed"));
+      return loadScript(sources[i]).then(function () {
+        if (typeof Html5Qrcode === "undefined") throw new Error("loaded but Html5Qrcode missing");
+      }).catch(function () { return tryIndex(i + 1); });
+    }
+    return tryIndex(0);
+  }
+
+  function startScan() {
+    setScanError("");
+    setScanStatus("starting");
+    loadHtml5Qrcode()
+      .then(function () {
+        var scanner = new Html5Qrcode(scanContainerId);
+        scannerRef.current = scanner;
+        return scanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 240, height: 140 } },
+          function (decodedText) {
+            stopScanner();
+            setScanStatus("idle");
+            lookupBarcode(decodedText);
+          },
+          function () { /* per-frame decode miss, ignore */ }
+        ).then(function () { setScanStatus("scanning"); });
+      })
+      .catch(function (err) {
+        setScanStatus("error");
+        var m = (err && err.message) || String(err);
+        if (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0) {
+          setScanError("Camera permission was denied. Allow camera access for this page and try again, or enter the food manually.");
+        } else if (m.indexOf("all sources failed") >= 0) {
+          setScanError("Couldn't load the barcode scanner library (network/firewall issue). You can enter the food manually instead.");
+        } else {
+          setScanError("Couldn't start the camera: " + m + ". You can enter the food manually instead.");
+        }
+      });
+  }
+
+  function cancelScan() {
+    stopScanner();
+    setScanStatus("idle");
+    setScanError("");
   }
 
   if (!meal) {
@@ -485,13 +575,28 @@ function AddFoodFlow(props) {
     ) : null,
 
     mode === "Scan" ? h("div", { className: "scan-box" },
-      scanStep === "scanning"
-        ? h("div", { className: "scanning-text" }, "READING…")
-        : h("div", null,
-            h("p", { className: "hint mb-4" }, "Not wired to a real camera or nutrition database — picks demo values you can then edit."),
-            h("button", { onClick: function () { mockScan("barcode"); }, className: "scan-btn" }, Icon("📶", 17), " Scan barcode"),
-            h("button", { onClick: function () { mockScan("label"); }, className: "scan-btn" }, Icon("📷", 17), " Photo nutrition label")
-          )
+      scanStatus === "idle" ? h("div", null,
+        h("p", { className: "hint mb-4" }, "Uses your camera to read a barcode, then looks it up in the Open Food Facts database. You'll be able to review and edit the result before adding it."),
+        h("button", { onClick: startScan, className: "scan-btn" }, Icon("📷", 17), " Scan barcode")
+      ) : null,
+
+      scanStatus === "looking-up" ? h("div", { className: "scanning-text" }, "Looking up product…") : null,
+
+      // Camera container stays mounted throughout starting/scanning so Html5Qrcode
+      // always has a real DOM node to attach to — visibility is CSS-only, avoiding
+      // any race between React's render commit and the scanner library initializing.
+      h("div", { style: { display: (scanStatus === "starting" || scanStatus === "scanning") ? "block" : "none" } },
+        h("div", { id: scanContainerId, className: "scan-camera" }),
+        scanStatus === "starting" ? h("div", { className: "scanning-text mt-2" }, "Starting camera…") : null,
+        scanStatus === "scanning" ? h("p", { className: "hint mt-2 mb-2" }, "Point your camera at the barcode.") : null,
+        (scanStatus === "starting" || scanStatus === "scanning") ? h("button", { onClick: cancelScan, className: "scan-btn" }, "Cancel") : null
+      ),
+
+      scanStatus === "error" ? h("div", null,
+        h("p", { className: "hint mb-3", style: { color: "#f87171" } }, scanError),
+        h("button", { onClick: startScan, className: "scan-btn" }, "Try again"),
+        h("button", { onClick: function () { setScanStatus("idle"); setMode("Manual"); }, className: "scan-btn" }, "Enter manually instead")
+      ) : null
     ) : null,
 
     mode === "Manual" ? h("div", null,

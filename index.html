@@ -1,1324 +1,403 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Datum</title>
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAJDUExURfv6+v///9jY2FhYWBEQEAAAABAQEFdXV/v7+7i4uAwMDLm4udbW1hISEgMDAwABAAEBANfW1lxcXAQDAwIDAAICABUVFQECAAoOAQwPAQECAQICAgoNAUBUCnWZEpjGGKbYG6/lG3WXHBMSGxESEQQEBAEBAUddC5/QGcX+IMD5H6ndHJfEGpvLGGqIHR8dJykqKiMkJRQUFQEAAAkMAXecE8P+ILLoHmuMEiw5BwwQAgAAAQYGBhEREiAhIigpKh4fIAYIAYSsFcX/IIy3Fx4nBRYWFycnKSEhIwUFBX6lFQYJARISEycoKR0eHzA/CLvzH5fGGQwRAhgYGRESEoGoFb/5HzpMCQMEAAQEBSIjJCEiIxskBLTqHZG+GBUVFg0NDkNXC1t4DwoKCigoKhYXGF99EMT/ITlLCSQlJhwdHm2NE8D6ICo4Bh8fIWiIEsD7IC48ByMjJQMDAFNsDsX/IUVbCyUmJxobHDA+CHKWEw4ODxITEwgLAZ/PGqreHBUcAxscHSYnKAgICFl0D2iJEQ0ODRsbHAsOApnIGrv0H0RZCwUIABUUGgcICCs5B7HnHrTsHklhDAoNAp7PGEthEAQBDTZHCa/jHb75H3qgFCItBREXAmKAD0NaCyMuBo+6F7jwHomzF116D0ZcC0NYC1VwDnyiFKzhHMv/IZvLGgUGAUVZC424F7buHsb+Ibz1IJvKGlp3DxAVAxsjBDpMCktjDU1lDj9TCyMvBgUHAVxbXNfX1xMSEhMTE9nY2BERERjKNasAAAABYktHRAH/Ai3eAAAAB3RJTUUH6gcPCTEqg3+r6QAAAeFJREFUOMtjYGBkYmZhxQrY2JkYORgYOblYcQIubkYGHl5WPiQhfgEkDh8rryCDEKswXFJEFM0EYVYhBjE4TwSIxSUkpVCUiDFIQ1kCoqwysnLyCopKyiqqCAXSDGpQeQF+dQ1NLW0dXT19A0MjmDZWYwaoPKuJqZm5haWVAKu1ja2dvYMNTAVUAaujk7OLKys/yKlAc93cPTxRFIizWjh7ebOKiPBDhX18/dSQFIiy+gcEBoG9AQPB9iFICgRYQ8PCWSOQvRcZFS0NVyDAGhMbh6wdBOLtE+AKRFgTnZNY0VQkp6QiKUhLz0BXoJqZhaQgOyeXFS0epKPykBTkFxRiKChygCsoZi0pLUO3wqa8Aq5AlLUypwrdhGr7GqSQrK2rb2AVQFHQ2NSMUCDC2lLaihpQbb7tKJHV0dnVzRoBtUVARKCn170PNbL6J0ycBJQqFhEpFmdlnTxl6jQBFBNEWafPmDlrNoQzZ25a2jyYo2HpQYR1/gKzhYsWL1m6bPmKlasi4E5mgDFEWVevWbsuff360g0bN22Ge9oYnmhZxQVYBbZs3bZ9x85dyAGKlOxZ4elJBBEkYsgZB2iKCBCII/jCrLsZ9uxFyXoogI913x7CmZeDcT8zG3bpA8zA7A8AZUVmciMRN+sAAAAASUVORK5CYII=" />
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-* { box-sizing: border-box; }
-html, body { background: #000; margin: 0; height: 100%; }
-body { font-family: 'Inter', -apple-system, sans-serif; }
-button, input { font-family: inherit; }
-button { cursor: pointer; border: none; background: none; }
-
-.app-shell { width: 100%; max-width: 28rem; margin: 0 auto; height: 100vh; height: 100dvh; max-height: 800px; background: #000; display: flex; flex-direction: column; border-radius: 1.5rem; overflow: hidden; border: 1px solid #27272a; }
-.app-body { flex: 1 1 0%; overflow-y: auto; padding: 1rem 1.25rem; -webkit-overflow-scrolling: touch; }
-
-@media (max-width: 480px), (max-height: 700px) {
-  html, body { overflow: hidden; }
-  .app-shell { max-width: 100%; height: 100vh; height: 100dvh; max-height: none; border-radius: 0; border: none; }
-  .header { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
-  .tabbar { padding-bottom: env(safe-area-inset-bottom); }
-}
-
-.header { padding: 1.5rem 1.25rem 0.75rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #27272a; }
-.brand { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; color: #a3e635; font-weight: 700; text-transform: uppercase; }
-.page-title { font-family: 'Archivo Black', 'Inter', sans-serif; font-size: 1.25rem; color: #fff; text-transform: uppercase; letter-spacing: -0.025em; }
-.page-title-row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-.header-clock { font-family: 'JetBrains Mono', monospace; font-size: 0.6875rem; color: #71717a; }
-
-.date-nav { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem; position: relative; }
-.date-nav-arrow { font-size: 1.5rem; color: #a3e635; padding: 0 0.5rem; line-height: 1; }
-.date-nav-arrow:disabled { color: #3f3f46; }
-.date-nav-label { font-size: 0.9375rem; font-weight: 700; color: #fff; background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem; padding: 0.5rem 1rem; }
-.date-nav-hidden-input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
-
-.history-row { width: 100%; display: flex; justify-content: space-between; align-items: center; background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 0.5rem; text-align: left; }
-
-.row { display: flex; align-items: center; }
-.row-between { display: flex; align-items: center; justify-content: space-between; }
-.gap-1-5 { gap: 0.375rem; }
-.gap-2 { gap: 0.5rem; }
-.mb-0-5 { margin-bottom: 0.125rem; }
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 0.75rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-5 { margin-top: 1.25rem; }
-
-.icon-btn { width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: #18181b; border: 1px solid #3f3f46; color: #e4e4e7; display: flex; align-items: center; justify-content: center; }
-
-.card { background: #18181b; border-radius: 1rem; padding: 1rem; border: 1px solid #27272a; }
-.card.center { text-align: center; }
-.card-title { font-weight: 700; color: #fff; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.025em; }
-.text-lime { color: #a3e635; }
-.text-orange { color: #fb923c; }
-
-.label-sm { font-size: 0.75rem; font-weight: 600; color: #d4d4d8; text-transform: uppercase; letter-spacing: 0.025em; }
-.value-mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #a1a1aa; }
-.value-mono-bold { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; color: #fff; }
-.hint { font-size: 0.8125rem; color: #71717a; }
-.empty-state { text-align: center; color: #71717a; font-size: 0.875rem; margin-top: 2rem; margin-bottom: 1rem; }
-
-.btn-primary { width: 100%; background: #a3e635; color: #000; border-radius: 0.75rem; padding: 0.75rem; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.025em; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-.btn-primary:disabled { background: #3f3f46; color: #71717a; }
-
-.list-btn { width: 100%; text-align: left; background: #27272a; border: 1px solid #3f3f46; border-radius: 0.75rem; padding: 0.875rem 1rem; margin-bottom: 0.5rem; color: #fff; font-weight: 600; }
-.back-link { color: #a3e635; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.75rem; display: inline-block; }
-
-.segmented { display: flex; background: #27272a; border-radius: 0.75rem; padding: 0.25rem; margin-bottom: 1rem; border: 1px solid #3f3f46; }
-.segmented-btn { flex: 1 1 0%; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 700; color: #d4d4d8; text-align: center; }
-.segmented-btn-active { background: #a3e635; color: #000; }
-
-.scroll-list { max-height: 18rem; overflow-y: auto; }
-.quick-item { width: 100%; text-align: left; padding: 0.625rem 0; border-top: 1px solid #27272a; }
-.quick-item:first-child { border-top: none; }
-.quick-item-title { font-size: 0.875rem; font-weight: 600; color: #fff; }
-.quick-item-sub { font-size: 0.75rem; color: #a1a1aa; }
-
-.scan-box { text-align: center; padding: 1rem 0; }
-.scanning-text { color: #a3e635; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; letter-spacing: 0.1em; }
-.scan-btn { width: 100%; background: #27272a; border: 1px solid #52525b; border-radius: 0.75rem; padding: 0.875rem; margin-bottom: 0.625rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #fff; font-weight: 600; font-size: 0.875rem; }
-.scan-camera { width: 100%; min-height: 220px; border-radius: 0.75rem; overflow: hidden; background: #000; border: 1px solid #3f3f46; }
-.scan-camera video { width: 100% !important; border-radius: 0.75rem; }
-.computed-box { background: #27272a; border: 1px solid #3f3f46; border-radius: 0.75rem; padding: 0.75rem; margin-top: 0.5rem; margin-bottom: 0.75rem; }
-
-.field-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; font-weight: 600; }
-.field-input { width: 100%; background: #fff; border: 2px solid #d4d4d8; border-radius: 0.75rem; padding: 0.625rem 0.75rem; font-size: 1rem; color: #000; font-weight: 500; outline: none; margin-top: 0.25rem; }
-.field-input:focus { border-color: #84cc16; }
-.field-input::placeholder { color: #a1a1aa; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
-.modal-box { background: #18181b; width: 100%; max-width: 28rem; border-radius: 1.5rem; max-height: 100%; overflow-y: auto; border: 1px solid #3f3f46; }
-.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.25rem 0.75rem; position: sticky; top: 0; background: #18181b; border-bottom: 1px solid #3f3f46; }
-.modal-title { font-weight: 700; font-size: 1.125rem; color: #fff; text-transform: uppercase; letter-spacing: 0.025em; margin: 0; }
-.modal-body { padding: 1.25rem; }
-
-.progress-track { height: 0.5rem; background: #27272a; border-radius: 9999px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 9999px; transition: width 0.2s ease; }
-
-.workout-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid #27272a; }
-.workout-row:first-child { border-top: none; }
-.item-title { font-size: 0.875rem; color: #fff; font-weight: 500; }
-.item-title-bold { font-size: 0.875rem; color: #fff; font-weight: 700; }
-
-.food-row { display: flex; justify-content: space-between; padding: 0.625rem 0; border-top: 1px solid #27272a; }
-
-.counter-card { background: #18181b; border-radius: 1.5rem; padding: 1.5rem; text-align: center; margin-bottom: 1rem; border: 1px solid #27272a; display: flex; align-items: center; justify-content: center; }
-.counter-number { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 700; color: #a3e635; line-height: 1; }
-.counter-goal { font-size: 1rem; color: #71717a; }
-.counter-label { font-size: 0.6875rem; color: #a1a1aa; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.08em; }
-
-.ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
-.ring-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.ring-calorie-center { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-.macro-ring-row { display: flex; justify-content: space-between; gap: 0.25rem; margin-bottom: 1rem; }
-.macro-ring-item { display: flex; flex-direction: column; align-items: center; flex: 1 1 0%; }
-.macro-ring-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #fff; }
-.macro-ring-label { font-size: 0.6875rem; font-weight: 600; color: #d4d4d8; text-transform: uppercase; letter-spacing: 0.02em; margin-top: 0.375rem; }
-.macro-ring-value { font-family: 'JetBrains Mono', monospace; font-size: 0.625rem; color: #71717a; margin-top: 0.125rem; }
-.big-number { font-family: 'JetBrains Mono', monospace; font-size: 2.25rem; font-weight: 700; color: #a3e635; }
-
-.stat-box { flex: 1 1 0%; background: #18181b; border-radius: 0.75rem; padding: 0.75rem; text-align: center; border: 1px solid #27272a; }
-.stat-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.125rem; color: #fff; }
-
-.weight-input { flex: 1 1 0%; background: #fff; border: 2px solid #d4d4d8; border-radius: 0.75rem; padding: 0.75rem; font-size: 0.875rem; color: #000; font-weight: 500; outline: none; }
-.weight-input:focus { border-color: #84cc16; }
-.weight-input::placeholder { color: #a1a1aa; }
-.log-btn { background: #a3e635; color: #000; border-radius: 0.75rem; padding: 0 1.25rem; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; }
-.weight-row { display: flex; justify-content: space-between; background: #18181b; border-radius: 0.75rem; padding: 0.75rem 1rem; margin-bottom: 0.375rem; border: 1px solid #27272a; }
-
-.tabbar { display: flex; border-top: 1px solid #27272a; background: #000; }
-.tab-btn { flex: 1 1 0%; padding: 0.75rem 0; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; color: #71717a; }
-.tab-btn-active { color: #a3e635; }
-.tab-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }
-
-.summary-item { background: #27272a; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.875rem; }
-.summary-title { color: #fff; font-weight: 600; margin-bottom: 0.25rem; }
-.summary-line { color: #a1a1aa; font-size: 0.75rem; }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-spin { animation: spin 1.4s linear infinite; }
-
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
 </head>
 <body>
-<div id="root">
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#71717a;font-family:monospace;font-size:13px;">Loading…</div>
+<x-dc>
+
+<div style="width:380px;height:800px;margin:24px auto;background:{{bg}};border-radius:24px;overflow:hidden;border:1px solid {{border}};box-shadow:0 12px 40px rgba(0,0,0,0.2);display:flex;flex-direction:column;font-family:'Inter',sans-serif">
+  <div style="padding:18px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid {{border}}">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="22" height="22" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="{{border}}" stroke-width="10"/><circle cx="32" cy="32" r="26" fill="none" stroke="{{lime}}" stroke-width="10" stroke-dasharray="163" stroke-dashoffset="49" stroke-linecap="round" transform="rotate(-90 32 32)"/></svg>
+        <span style="font:700 16px 'JetBrains Mono',monospace;color:{{lime}};letter-spacing:0.12em">DATUM</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button onclick="{{ openCalendar }}" style="width:32px;height:32px;border-radius:9px;border:1px solid {{border}};background:{{surface}};display:flex;align-items:center;justify-content:center;padding:0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{text}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </button>
+      <button onclick="{{ openSettings }}" style="width:32px;height:32px;border-radius:9px;border:1px solid {{border}};background:{{surface}};display:flex;align-items:center;justify-content:center;padding:0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{text}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.14.5.5.94 1 1.15.3.13.62.2.94.2H21a2 2 0 0 1 0 4h-.09c-.5 0-.98.2-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div style="flex:1 1 0%;overflow-y:auto;padding:14px 16px 16px">
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px">
+      <button onclick="{{ dateBack }}" disabled="{{ isAtWeekStart }}" style="font:700 20px 'Inter',sans-serif;color:{{backArrowColor}};background:none;border:none;padding:0 6px;cursor:{{backArrowCursor}}">‹</button>
+      <span style="font:700 22px 'Inter',sans-serif;color:{{text}};line-height:1">{{dateNavLabel}}</span>
+      <button onclick="{{ dateForward }}" disabled="{{ isToday }}" style="font:700 20px 'Inter',sans-serif;color:{{forwardArrowColor}};background:none;border:none;padding:0 6px">›</button>
+    </div>
+
+    <sc-if value="{{isDash}}" hint-placeholder-val="{{true}}">
+    <div>
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font:600 9px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em">WEIGHT GOAL</span><span style="font:700 12px 'JetBrains Mono',monospace;color:{{text}}">{{weightGoalLabel}}</span></div>
+        <div style="height:7px;background:{{border}};border-radius:4px;overflow:hidden"><div style="width:{{weightGoalPct}}%;height:100%;background:{{lime}}"></div></div>
+      </div>
+
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:14px;padding:16px;margin-bottom:8px;display:flex;align-items:center;gap:18px">
+        <div style="position:relative;width:92px;height:92px;flex-shrink:0"><svg width="92" height="92" viewBox="0 0 92 92"><circle cx="46" cy="46" r="38" fill="none" stroke="{{border}}" stroke-width="11"/><circle cx="46" cy="46" r="38" fill="none" stroke="{{lime}}" stroke-width="11" stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="{{calRingOffset}}" transform="rotate(-90 46 46)"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 17px 'JetBrains Mono',monospace;color:{{text}}">66%</div></div>
+        <div><div style="font:600 10px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em;margin-bottom:2px">CALORIES</div><div style="font:700 24px 'JetBrains Mono',monospace;color:{{text}}">1450<span style="font:500 13px;color:{{subtext}}">/2200</span></div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center">
+          <div style="position:relative;width:42px;height:42px"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="{{border}}" stroke-width="5"/><circle cx="21" cy="21" r="17" fill="none" stroke="{{cyan}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="{{proteinRingOffset}}" transform="rotate(-90 21 21)"/></svg></div>
+          <div style="font:700 12px 'JetBrains Mono',monospace;color:{{text}}">61%</div>
+          <div style="font:600 8px 'JetBrains Mono',monospace;color:{{text}};letter-spacing:0.06em">PROTEIN</div>
+          <div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">92g/150g</div>
+        </div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center">
+          <div style="position:relative;width:42px;height:42px"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="{{border}}" stroke-width="5"/><circle cx="21" cy="21" r="17" fill="none" stroke="{{orange}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="{{carbRingOffset}}" transform="rotate(-90 21 21)"/></svg></div>
+          <div style="font:700 12px 'JetBrains Mono',monospace;color:{{text}}">64%</div>
+          <div style="font:600 8px 'JetBrains Mono',monospace;color:{{text}};letter-spacing:0.06em">CARBS</div>
+          <div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">140g/220g</div>
+        </div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center">
+          <div style="position:relative;width:42px;height:42px"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="{{border}}" stroke-width="5"/><circle cx="21" cy="21" r="17" fill="none" stroke="{{pink}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="0" transform="rotate(-90 21 21)"/></svg></div>
+          <div style="font:700 12px 'JetBrains Mono',monospace;color:{{pink}}">300%</div>
+          <div style="font:600 8px 'JetBrains Mono',monospace;color:{{text}};letter-spacing:0.06em">SUGAR</div>
+          <div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">150g/50g</div>
+        </div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center">
+          <div style="position:relative;width:42px;height:42px"><svg width="42" height="42" viewBox="0 0 42 42"><circle cx="21" cy="21" r="17" fill="none" stroke="{{border}}" stroke-width="5"/><circle cx="21" cy="21" r="17" fill="none" stroke="{{blue}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="{{fatRingOffset}}" transform="rotate(-90 21 21)"/></svg></div>
+          <div style="font:700 12px 'JetBrains Mono',monospace;color:{{text}}">69%</div>
+          <div style="font:600 8px 'JetBrains Mono',monospace;color:{{text}};letter-spacing:0.06em">FAT</div>
+          <div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">48g/70g</div>
+        </div>
+      </div>
+
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font:600 9px 'JetBrains Mono',monospace;color:{{subtext}};margin-bottom:2px">TODAY'S SESSION</div><div style="font:600 13px 'Inter',sans-serif;color:{{text}}">Upper Body · 45min</div></div>
+        <div style="font:700 18px 'JetBrains Mono',monospace;color:{{lime}}">320</div>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button onclick="{{ setTab_food }}" style="flex:1;background:{{lime}};color:#0d0d10;border:none;border-radius:10px;padding:12px;font:700 11px 'Inter',sans-serif">+ Food</button>
+        <button onclick="{{ setTab_train }}" style="flex:1;background:{{surface}};border:1px solid {{border}};color:{{text}};border-radius:10px;padding:12px;font:700 11px 'Inter',sans-serif">+ Train</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isFood}}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:14px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font:700 12px 'Inter',sans-serif;color:{{text}}">Breakfast</span><span style="font:700 13px 'JetBrains Mono',monospace;color:{{lime}}">420</span></div>
+        <div style="font:600 12px 'Inter',sans-serif;color:{{text}};margin-bottom:5px">Oatmeal + banana</div>
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:{{subtext}}">P 8g · C 72g · Sugar 18g · F 6g</div>
+      </div>
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:14px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font:700 12px 'Inter',sans-serif;color:{{text}}">Lunch</span><span style="font:700 13px 'JetBrains Mono',monospace;color:{{lime}}">610</span></div>
+        <div style="font:600 12px 'Inter',sans-serif;color:{{text}};margin-bottom:5px">Chicken rice bowl</div>
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:{{subtext}}">P 45g · C 58g · Sugar 4g · F 18g</div>
+      </div>
+      <div style="background:{{surface}};border:1px dashed {{border}};border-radius:14px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between"><span style="font:700 12px 'Inter',sans-serif;color:{{subtext}}">Dinner</span><span style="font:500 11px 'Inter',sans-serif;color:{{subtext}}">Not logged</span></div>
+      </div>
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:14px;padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font:700 12px 'Inter',sans-serif;color:{{text}}">Snacks</span><span style="font:700 13px 'JetBrains Mono',monospace;color:{{lime}}">200</span></div>
+        <div style="font:600 12px 'Inter',sans-serif;color:{{text}};margin-bottom:5px">Protein bar</div>
+        <div style="font:500 10px 'JetBrains Mono',monospace;color:{{subtext}}">P 20g · C 18g · Sugar 6g · F 7g</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isTrain}}">
+    <div>
+      <div style="display:flex;align-items:flex-end;gap:5px;height:64px;margin-bottom:12px;padding:0 4px">
+        <div style="flex:1;background:{{border}};border-radius:3px 3px 0 0;height:40%"></div>
+        <div style="flex:1;background:{{cyan}};border-radius:3px 3px 0 0;height:80%"></div>
+        <div style="flex:1;background:{{border}};border-radius:3px 3px 0 0;height:20%"></div>
+        <div style="flex:1;background:{{border}};border-radius:3px 3px 0 0;height:20%"></div>
+        <div style="flex:1;background:{{lime}};border-radius:3px 3px 0 0;height:65%"></div>
+        <div style="flex:1;background:{{border}};border-radius:3px 3px 0 0;height:20%"></div>
+        <div style="flex:1;background:{{border}};border-radius:3px 3px 0 0;height:20%"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px"><div style="font:600 8px 'JetBrains Mono',monospace;color:{{subtext}};margin-bottom:4px">MON</div><div style="font:600 12px 'Inter',sans-serif;color:{{text}};margin-bottom:4px">5K Run</div><div style="font:700 15px 'JetBrains Mono',monospace;color:{{cyan}}">280</div></div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px"><div style="font:600 8px 'JetBrains Mono',monospace;color:{{subtext}};margin-bottom:4px">TODAY</div><div style="font:600 12px 'Inter',sans-serif;color:{{text}};margin-bottom:4px">Upper Body</div><div style="font:700 15px 'JetBrains Mono',monospace;color:{{lime}}">320</div></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{isWeight}}">
+    <div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;text-align:center"><div style="font:700 14px 'JetBrains Mono',monospace;color:{{text}}">{{weightTargetLabel}}</div><div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">TARGET</div></div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;text-align:center"><div style="font:700 14px 'JetBrains Mono',monospace;color:{{text}}">{{weightCurrentLabel}}</div><div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">CURRENT</div></div>
+        <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:10px;text-align:center"><div style="font:700 14px 'JetBrains Mono',monospace;color:{{lime}}">{{weightDeltaLabel}}</div><div style="font:500 8px 'JetBrains Mono',monospace;color:{{subtext}}">SINCE START</div></div>
+      </div>
+      <div style="background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px;margin-bottom:10px">
+        <div style="font:600 8px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em;margin-bottom:6px">6-WEEK TREND</div>
+        <svg width="100%" height="110" viewBox="0 0 320 118" preserveAspectRatio="none">
+          <sc-for list="{{weightAxisLabels}}" as="al" hint-placeholder-count="2">
+            <text x="0" y="{{al.y}}" font-size="8" font-family="JetBrains Mono, monospace" fill="{{subtext}}">{{al.text}}</text>
+          </sc-for>
+          <path d="{{weightChartPath}}" fill="none" stroke="{{lime}}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>
+          <sc-for list="{{weightChartPoints}}" as="pt" hint-placeholder-count="7">
+            <circle cx="{{pt.x}}" cy="{{pt.y}}" r="3.5" fill="{{lime}}"></circle>
+          </sc-for>
+          <sc-for list="{{weightDateLabels}}" as="dl" hint-placeholder-count="7">
+            <text x="{{dl.x}}" y="106" font-size="7" font-family="JetBrains Mono, monospace" fill="{{subtext}}" text-anchor="middle">{{dl.text}}</text>
+          </sc-for>
+        </svg>
+      </div>
+      <sc-for list="{{weightLogRows}}" as="row" hint-placeholder-count="6">
+        <div style="display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid {{border}}"><span style="font:500 12px 'Inter',sans-serif;color:{{subtext}}">{{row.label}}</span><span style="font:600 12px 'JetBrains Mono',monospace;color:{{text}}">{{row.valueLabel}}</span></div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <div style="padding:10px">
+    <div style="display:flex;background:{{surface}};border:1px solid {{border}};border-radius:16px;padding:5px">
+      <button onclick="{{ setTab_dash }}" style="flex:1;padding:9px 0;border-radius:12px;border:none;background:{{pillDashBg}};font:700 10px 'Inter',sans-serif;color:{{pillDashColor}}">TODAY</button>
+      <button onclick="{{ setTab_food }}" style="flex:1;padding:9px 0;border-radius:12px;border:none;background:{{pillFoodBg}};font:700 10px 'Inter',sans-serif;color:{{pillFoodColor}}">FOOD</button>
+      <button onclick="{{ setTab_train }}" style="flex:1;padding:9px 0;border-radius:12px;border:none;background:{{pillTrainBg}};font:700 10px 'Inter',sans-serif;color:{{pillTrainColor}}">TRAIN</button>
+      <button onclick="{{ setTab_weight }}" style="flex:1;padding:9px 0;border-radius:12px;border:none;background:{{pillWeightBg}};font:700 10px 'Inter',sans-serif;color:{{pillWeightColor}}">WEIGHT</button>
+    </div>
+  </div>
+
+  <sc-if value="{{calendarOpen}}">
+  <div onclick="{{ closeCalendar }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10;padding:24px">
+    <div onclick="{{ stop }}" style="width:100%;max-width:270px;background:{{bg}};border:1px solid {{border}};border-radius:16px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,0.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font:700 14px 'Inter',sans-serif;color:{{text}}">Jump to date</div>
+        <button onclick="{{ closeCalendar }}" style="width:24px;height:24px;border-radius:7px;border:1px solid {{border}};background:{{surface}};color:{{subtext}};font:700 12px 'Inter',sans-serif;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">
+        <sc-for list="{{weekdayLabels}}" as="wd" hint-placeholder-count="7"><div style="text-align:center;font:600 9px 'JetBrains Mono',monospace;color:{{subtext}}">{{wd}}</div></sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+        <sc-for list="{{calendarCells}}" as="cell" hint-placeholder-count="35">
+          <button onclick="{{ cell.select }}" disabled="{{ cell.disabled }}" style="aspect-ratio:1;border-radius:8px;border:1px solid {{cell.border}};background:{{cell.bg}};color:{{cell.color}};font:600 11px 'Inter',sans-serif">{{cell.day}}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{settingsOpen}}">
+  <div onclick="{{ closeSettings }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:10;padding:24px">
+    <div onclick="{{ stop }}" style="width:100%;max-width:270px;background:{{bg}};border:1px solid {{border}};border-radius:16px;padding:16px;box-shadow:0 12px 30px rgba(0,0,0,0.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font:700 14px 'Inter',sans-serif;color:{{text}}">Settings</div>
+        <button onclick="{{ closeSettings }}" style="width:24px;height:24px;border-radius:7px;border:1px solid {{border}};background:{{surface}};color:{{subtext}};font:700 12px 'Inter',sans-serif;display:flex;align-items:center;justify-content:center;padding:0">✕</button>
+      </div>
+      <div style="font:600 10px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em;margin-bottom:8px">UNITS</div>
+      <div style="display:flex;background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:4px;margin-bottom:18px">
+        <button onclick="{{ setUnit_kg }}" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:{{unitKgBg}};color:{{unitKgColor}};font:700 11px 'Inter',sans-serif">KG</button>
+        <button onclick="{{ setUnit_lbs }}" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:{{unitLbsBg}};color:{{unitLbsColor}};font:700 11px 'Inter',sans-serif">LBS</button>
+        <button onclick="{{ setUnit_st }}" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:{{unitStBg}};color:{{unitStColor}};font:700 11px 'Inter',sans-serif">STONE</button>
+      </div>
+      <div style="font:600 10px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em;margin-bottom:8px">APPEARANCE</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:{{surface}};border:1px solid {{border}};border-radius:12px;padding:12px 14px;margin-bottom:18px">
+        <span style="font:600 12px 'Inter',sans-serif;color:{{text}}">Dark mode</span>
+        <button onclick="{{ toggleTheme }}" style="width:44px;height:24px;border-radius:12px;border:1px solid {{border}};background:{{themeTrackBg}};position:relative;padding:0"><div style="width:18px;height:18px;border-radius:50%;background:{{lime}};position:absolute;top:2px;left:{{knobLeft}};transition:left 0.15s"></div></button>
+      </div>
+      <div style="font:600 10px 'JetBrains Mono',monospace;color:{{subtext}};letter-spacing:0.06em;margin-bottom:8px">DATA</div>
+      <div style="display:flex;gap:8px;margin-bottom:18px">
+        <button onclick="{{ exportData }}" style="flex:1;padding:11px 0;border-radius:10px;border:1px solid {{border}};background:{{surface}};color:{{text}};font:700 11px 'Inter',sans-serif">Export</button>
+        <button onclick="{{ triggerImport }}" style="flex:1;padding:11px 0;border-radius:10px;border:1px solid {{border}};background:{{surface}};color:{{text}};font:700 11px 'Inter',sans-serif">Import</button>
+        <input ref="{{ fileInputRef }}" type="file" accept="application/json" onchange="{{ handleImportFile }}" style="display:none" />
+      </div>
+      <button onclick="{{ closeSettings }}" style="width:100%;padding:13px;border-radius:10px;border:none;background:{{lime}};color:#0d0d10;font:700 12px 'Inter',sans-serif">Done</button>
+    </div>
+  </div>
+  </sc-if>
+
 </div>
-<script>
-  window.onerror = function (msg, url, line, col, err) {
-    document.getElementById("root").innerHTML =
-      '<pre style="color:#f87171;background:#18181b;padding:20px;white-space:pre-wrap;font-family:monospace;font-size:12px;border-radius:12px;margin:16px;">' +
-      "Error: " + String(msg) + "\nLine " + line + ", Col " + col + "\n\n" + (err && err.stack ? err.stack : "") +
-      "</pre>";
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+class Component extends DCLogic {
+  state = {
+    theme: 'dark', tab: 'dashboard', dateOffset: 0, now: new Date(),
+    unit: 'kg', calendarOpen: false, settingsOpen: false
   };
-</script>
-<script>
-  var CDN_SOURCES = [
-    { react: "https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
-      reactDom: "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
-      name: "cdnjs" },
-    { react: "https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js",
-      reactDom: "https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js",
-      name: "jsdelivr" },
-    { react: "https://unpkg.com/react@18/umd/react.production.min.js",
-      reactDom: "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
-      name: "unpkg" }
-  ];
 
-  function loadScript(src) {
-    return new Promise(function (resolve, reject) {
-      var s = document.createElement("script");
-      s.src = src;
-      s.crossOrigin = "anonymous";
-      s.onload = resolve;
-      s.onerror = function () { reject(new Error("failed to load " + src)); };
-      document.head.appendChild(s);
-    });
+  fileInputRef = React.createRef();
+
+  componentDidMount() {
+    this._t = setInterval(() => this.setState({ now: new Date() }), 30000);
   }
-
-  function tryLoadFrom(sourceIndex) {
-    if (sourceIndex >= CDN_SOURCES.length) {
-      document.getElementById("root").innerHTML =
-        '<pre style="color:#f87171;background:#18181b;padding:20px;white-space:pre-wrap;font-family:monospace;font-size:12px;border-radius:12px;margin:16px;">' +
-        "Couldn't load React from any CDN (tried cdnjs, jsdelivr, unpkg).\n\n" +
-        "This points to a network-level block on your connection rather than one specific site. Try switching networks (e.g. mobile data instead of wifi), disabling any content/ad/privacy blocker for this page, or opening this file once it's actually hosted online." +
-        "</pre>";
-      return;
-    }
-    var src = CDN_SOURCES[sourceIndex];
-    loadScript(src.react)
-      .then(function () { return loadScript(src.reactDom); })
-      .then(function () {
-        if (typeof React === "undefined" || typeof ReactDOM === "undefined") {
-          throw new Error("loaded but globals missing from " + src.name);
-        }
-        initDatumApp();
-      })
-      .catch(function () { tryLoadFrom(sourceIndex + 1); });
-  }
-</script>
-<script>
-function initDatumApp() {
-// ============================================================
-// Datum — plain JS (no JSX/Babel) React app.
-// Storage: uses real localStorage when available (e.g. hosted on
-// GitHub Pages); silently falls back to an in-memory store when
-// localStorage is blocked (e.g. inside a sandboxed preview), so
-// the app still works there for testing, it just won't persist
-// between reloads in that specific context.
-// ============================================================
-"use strict";
-
-var h = React.createElement;
-var useState = React.useState;
-var useMemo = React.useMemo;
-var useEffect = React.useEffect;
-var useRef = React.useRef;
-
-// ---------- storage ----------
-var STORAGE_PREFIX = "datum:";
-var memoryStore = {};
-var useRealStorage = true;
-try {
-  var testKey = "__datum_test__";
-  window.localStorage.setItem(testKey, "1");
-  window.localStorage.removeItem(testKey);
-} catch (e) {
-  useRealStorage = false;
-}
-function loadKey(key, fallback) {
-  try {
-    if (useRealStorage) {
-      var raw = window.localStorage.getItem(STORAGE_PREFIX + key);
-      return raw ? JSON.parse(raw) : fallback;
-    }
-    return Object.prototype.hasOwnProperty.call(memoryStore, key)
-      ? JSON.parse(JSON.stringify(memoryStore[key]))
-      : fallback;
-  } catch (e) {
-    return fallback;
-  }
-}
-function saveKey(key, value) {
-  try {
-    if (useRealStorage) {
-      window.localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
-    } else {
-      memoryStore[key] = value;
-    }
-  } catch (e) {}
-}
-
-// ---------- date / unit helpers ----------
-var KG_PER_LB = 0.453592;
-function toKg(val, unit) { return unit === "kg" ? val : val * KG_PER_LB; }
-function fromKg(kg, unit) { return unit === "kg" ? kg : Math.round((kg / KG_PER_LB) * 10) / 10; }
-function uid() { return Math.random().toString(36).slice(2, 10); }
-function dateKey(d) {
-  d = d || new Date();
-  var x = new Date(d);
-  x.setMinutes(x.getMinutes() - x.getTimezoneOffset());
-  return x.toISOString().slice(0, 10);
-}
-function startOfWeek(d) {
-  d = d || new Date();
-  var x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  x.setDate(x.getDate() - x.getDay());
-  return x;
-}
-function weekKey(d) { return dateKey(startOfWeek(d)); }
-function monthKey(d) { return dateKey(d).slice(0, 7); }
-function isLastDayOfMonth(d) {
-  var next = new Date(d);
-  next.setDate(next.getDate() + 1);
-  return next.getDate() === 1;
-}
-function formatShortDate(key) {
-  var d = new Date(key + "T00:00:00");
-  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-}
-function formatTime(d) {
-  d = d || new Date();
-  return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-}
-function addDays(key, delta) {
-  var d = new Date(key + "T00:00:00");
-  d.setDate(d.getDate() + delta);
-  return dateKey(d);
-}
-
-var MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-
-// ---------- tiny icon helper (emoji, no icon library) ----------
-function Icon(glyph, size, className) {
-  return h("span", { style: { fontSize: size || 16, lineHeight: 1, display: "inline-flex" }, className: className || "" }, glyph);
-}
-
-// ---------- shared UI ----------
-function Field(props) {
-  var label = props.label;
-  var inputProps = {};
-  for (var k in props) { if (k !== "label") inputProps[k] = props[k]; }
-  inputProps.className = "field-input";
-  return h("div", { className: "mb-3" },
-    h("label", { className: "field-label" }, label),
-    h("input", inputProps)
-  );
-}
-
-function Modal(props) {
-  return h("div", { className: "modal-backdrop", onClick: function (e) { if (e.target === e.currentTarget) props.onClose(); } },
-    h("div", { className: "modal-box" },
-      h("div", { className: "modal-header" },
-        h("h3", { className: "modal-title" }, props.title),
-        h("button", { onClick: props.onClose, className: "icon-btn" }, Icon("✕", 16))
-      ),
-      h("div", { className: "modal-body" }, props.children)
-    )
-  );
-}
-
-function Segmented(props) {
-  return h("div", { className: "segmented" },
-    props.options.map(function (opt) {
-      return h("button", {
-        key: opt,
-        onClick: function () { props.onChange(opt); },
-        className: "segmented-btn" + (props.value === opt ? " segmented-btn-active" : "")
-      }, opt);
-    })
-  );
-}
-
-function ProgressBar(props) {
-  var pct = Math.max(0, Math.min(100, props.pct));
-  return h("div", { className: "progress-track" },
-    h("div", { className: "progress-fill", style: { width: pct + "%", backgroundColor: props.color || "#a3e635" } })
-  );
-}
-
-function ProgressRing(props) {
-  var size = props.size || 64, stroke = props.stroke || 8;
-  var pct = Math.max(0, Math.min(100, props.pct || 0));
-  var r = (size - stroke) / 2;
-  var c = 2 * Math.PI * r;
-  var offset = c - (pct / 100) * c;
-  var half = size / 2;
-  return h("div", { className: "ring-wrap", style: { width: size, height: size } },
-    h("svg", { width: size, height: size, viewBox: "0 0 " + size + " " + size },
-      h("circle", { cx: half, cy: half, r: r, fill: "none", stroke: props.trackColor || "#27272a", strokeWidth: stroke }),
-      h("circle", {
-        cx: half, cy: half, r: r, fill: "none", stroke: props.color || "#a3e635", strokeWidth: stroke,
-        strokeDasharray: c, strokeDashoffset: offset, strokeLinecap: "round",
-        transform: "rotate(-90 " + half + " " + half + ")"
-      })
-    ),
-    h("div", { className: "ring-center" }, props.children)
-  );
-}
-
-function MacroRing(props) {
-  var rawPct = props.goal > 0 ? (props.current / props.goal) * 100 : 0;
-  var fillPct = Math.min(100, rawPct);
-  return h("div", { className: "macro-ring-item" },
-    h(ProgressRing, { pct: fillPct, size: 62, stroke: 7, color: props.color },
-      h("span", { className: "macro-ring-pct" }, Math.round(rawPct) + "%")
-    ),
-    h("div", { className: "macro-ring-label" }, props.label),
-    h("div", { className: "macro-ring-value" }, Math.round(props.current) + "/" + props.goal + "g")
-  );
-}
-
-// ---------- simple hand-built SVG line chart ----------
-function SimpleLineChart(props) {
-  var data = props.data, dataKey = props.dataKey, labelKey = props.labelKey, height = props.height || 200;
-  var width = 320, padY = 20, padX = 8;
-  var values = data.map(function (d) { return d[dataKey]; });
-  var min = Math.min.apply(null, values);
-  var max = Math.max.apply(null, values);
-  var span = max - min || 1;
-  var stepX = (width - padX * 2) / Math.max(1, data.length - 1);
-  var points = data.map(function (d, i) {
-    return { x: padX + i * stepX, y: padY + (1 - (d[dataKey] - min) / span) * (height - padY * 2) };
-  });
-  var pathD = points.map(function (p, i) { return (i === 0 ? "M " : "L ") + p.x + " " + p.y; }).join(" ");
-  return h("svg", { width: "100%", height: height, viewBox: "0 0 " + width + " " + height, preserveAspectRatio: "none" },
-    [0, 0.5, 1].map(function (f) {
-      var y = padY + f * (height - padY * 2);
-      return h("line", { key: f, x1: padX, x2: width - padX, y1: y, y2: y, stroke: "#27272a", strokeWidth: "1" });
-    }),
-    h("path", { d: pathD, fill: "none", stroke: "#a3e635", strokeWidth: "2.5", strokeLinejoin: "round", strokeLinecap: "round" }),
-    points.map(function (p, i) { return h("circle", { key: i, cx: p.x, cy: p.y, r: "3", fill: "#a3e635" }); })
-  );
-}
-
-// ---------- Goal edit form ----------
-function EditGoalsForm(props) {
-  var goals = props.goals, unit = props.unit;
-  var s1 = useState(String(fromKg(goals.targetWeightKg, unit))), targetWeight = s1[0], setTargetWeight = s1[1];
-  var s2 = useState(String(goals.calorieGoal)), calorieGoal = s2[0], setCalorieGoal = s2[1];
-  var s3 = useState(String(goals.workoutMinutes)), workoutMinutes = s3[0], setWorkoutMinutes = s3[1];
-  var s4 = useState(String(goals.workoutDays)), workoutDays = s4[0], setWorkoutDays = s4[1];
-
-  function submit() {
-    props.onSave({
-      targetWeightKg: toKg(parseFloat(targetWeight) || 0, unit),
-      calorieGoal: parseInt(calorieGoal, 10) || 0,
-      workoutMinutes: parseInt(workoutMinutes, 10) || 0,
-      workoutDays: Math.min(7, Math.max(1, parseInt(workoutDays, 10) || 1))
-    });
-  }
-
-  return h("div", null,
-    h(Field, { label: "Target weight (" + unit + ")", value: targetWeight, onChange: function (e) { setTargetWeight(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-    h(Field, { label: "Daily calorie goal", value: calorieGoal, onChange: function (e) { setCalorieGoal(e.target.value); }, placeholder: "0", inputMode: "numeric" }),
-    h("div", { className: "grid-2" },
-      h(Field, { label: "Workout length (min)", value: workoutMinutes, onChange: function (e) { setWorkoutMinutes(e.target.value); }, placeholder: "0", inputMode: "numeric" }),
-      h(Field, { label: "Days per week", value: workoutDays, onChange: function (e) { setWorkoutDays(e.target.value); }, placeholder: "0", inputMode: "numeric" })
-    ),
-    h("button", { onClick: submit, className: "btn-primary mt-2" }, "Save goals")
-  );
-}
-
-// ---------- Food entry: quick-add / manual (total or per-100g) / scan ----------
-function AddFoodFlow(props) {
-  var knownFoods = props.knownFoods;
-  var sMeal = useState(null), meal = sMeal[0], setMeal = sMeal[1];
-  var sMode = useState(knownFoods.length ? "Quick add" : "Manual"), mode = sMode[0], setMode = sMode[1];
-  var sEntryMode = useState("Total"), entryMode = sEntryMode[0], setEntryMode = sEntryMode[1]; // "Total" | "Per 100g"
-  var sName = useState(""), name = sName[0], setName = sName[1];
-  var sCal = useState(""), calories = sCal[0], setCalories = sCal[1];
-  var sPro = useState(""), protein = sPro[0], setProtein = sPro[1];
-  var sCarb = useState(""), carbs = sCarb[0], setCarbs = sCarb[1];
-  var sSugar = useState(""), sugar = sSugar[0], setSugar = sSugar[1];
-  var sFat = useState(""), fat = sFat[0], setFat = sFat[1];
-  var sWeight = useState(""), foodWeight = sWeight[0], setFoodWeight = sWeight[1];
-  var sWeightUnit = useState("g"), weightUnit = sWeightUnit[0], setWeightUnit = sWeightUnit[1];
-  var sScanStatus = useState("idle"), scanStatus = sScanStatus[0], setScanStatus = sScanStatus[1]; // idle | starting | scanning | looking-up | error
-  var sScanError = useState(""), scanError = sScanError[0], setScanError = sScanError[1];
-  var scanContainerId = useState(function () { return "scan-" + uid(); })[0];
-  var scannerRef = useRef(null);
-
-  function fillFrom(food) {
-    setName(food.name); setCalories(String(food.calories)); setProtein(String(food.protein));
-    setCarbs(String(food.carbs)); setSugar(String(food.sugar)); setFat(String(food.fat));
-    setMode("Manual"); setEntryMode("Total");
-  }
-
-  function perGram(v) { return (parseFloat(v) || 0) / 100; }
-  var weightNum = parseFloat(foodWeight) || 0;
-  var computed = entryMode === "Per 100g" ? {
-    calories: Math.round(perGram(calories) * weightNum),
-    protein: Math.round(perGram(protein) * weightNum * 10) / 10,
-    carbs: Math.round(perGram(carbs) * weightNum * 10) / 10,
-    sugar: Math.round(perGram(sugar) * weightNum * 10) / 10,
-    fat: Math.round(perGram(fat) * weightNum * 10) / 10
-  } : null;
-
-  function submit() {
-    if (!name.trim()) return;
-    if (entryMode === "Per 100g") {
-      if (!calories || !weightNum) return;
-      props.onAdd(meal, {
-        name: name.trim() + " (" + weightNum + weightUnit + ")",
-        calories: computed.calories, protein: computed.protein,
-        carbs: computed.carbs, sugar: computed.sugar, fat: computed.fat
-      });
-    } else {
-      if (!calories) return;
-      props.onAdd(meal, {
-        name: name.trim(),
-        calories: parseFloat(calories) || 0,
-        protein: parseFloat(protein) || 0,
-        carbs: parseFloat(carbs) || 0,
-        sugar: parseFloat(sugar) || 0,
-        fat: parseFloat(fat) || 0
-      });
-    }
-  }
-  function stopScanner() {
-    if (scannerRef.current) {
-      try { scannerRef.current.stop().then(function () { scannerRef.current.clear(); }).catch(function () {}); }
-      catch (e) {}
-      scannerRef.current = null;
-    }
-  }
-
-  useEffect(function () { return stopScanner; }, []); // stop camera if this form unmounts mid-scan
-  useEffect(function () { if (mode !== "Scan") stopScanner(); }, [mode]); // stop camera if user switches tabs mid-scan
-
-  function lookupBarcode(code) {
-    setScanStatus("looking-up");
-    fetch("https://world.openfoodfacts.org/api/v2/product/" + encodeURIComponent(code) + ".json")
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (!data || data.status !== 1 || !data.product) {
-          setScanStatus("error");
-          setScanError("No product found for barcode " + code + ". You can enter it manually instead.");
-          return;
-        }
-        var p = data.product;
-        var n = p.nutriments || {};
-        setName(p.product_name || p.generic_name || ("Product " + code));
-        setCalories(String(Math.round(n["energy-kcal_100g"] != null ? n["energy-kcal_100g"] : (n["energy-kcal"] || 0))));
-        setProtein(String(n["proteins_100g"] != null ? n["proteins_100g"] : 0));
-        setCarbs(String(n["carbohydrates_100g"] != null ? n["carbohydrates_100g"] : 0));
-        setSugar(String(n["sugars_100g"] != null ? n["sugars_100g"] : 0));
-        setFat(String(n["fat_100g"] != null ? n["fat_100g"] : 0));
-        setFoodWeight("");
-        setWeightUnit("g");
-        setEntryMode("Per 100g");
-        setMode("Manual");
-        setScanStatus("idle");
-      })
-      .catch(function () {
-        setScanStatus("error");
-        setScanError("Couldn't reach the product database (network issue). You can enter the food manually instead.");
-      });
-  }
-
-  function loadHtml5Qrcode() {
-    if (typeof Html5Qrcode !== "undefined") return Promise.resolve();
-    var sources = [
-      "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js",
-      "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
-      "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
-    ];
-    function tryIndex(i) {
-      if (i >= sources.length) return Promise.reject(new Error("all sources failed"));
-      return loadScript(sources[i]).then(function () {
-        if (typeof Html5Qrcode === "undefined") throw new Error("loaded but Html5Qrcode missing");
-      }).catch(function () { return tryIndex(i + 1); });
-    }
-    return tryIndex(0);
-  }
-
-  function startScan() {
-    setScanError("");
-
-    if (!window.isSecureContext) {
-      setScanStatus("error");
-      setScanError("Camera access requires a secure (https) connection. Make sure you're opening this page's https:// URL, not a plain http:// one.");
-      return;
-    }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setScanStatus("error");
-      setScanError("This browser doesn't expose camera access here — this is common in in-app browsers (Instagram, Facebook, TikTok, LinkedIn, etc. opening links in their own built-in browser instead of Safari/Chrome). Open this page directly in Safari or Chrome instead, or enter the food manually.");
-      return;
-    }
-
-    setScanStatus("starting");
-    loadHtml5Qrcode()
-      .then(function () {
-        var scanner = new Html5Qrcode(scanContainerId);
-        scannerRef.current = scanner;
-        return scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 240, height: 140 } },
-          function (decodedText) {
-            stopScanner();
-            setScanStatus("idle");
-            lookupBarcode(decodedText);
-          },
-          function () { /* per-frame decode miss, ignore */ }
-        ).then(function () { setScanStatus("scanning"); });
-      })
-      .catch(function (err) {
-        setScanStatus("error");
-        var m = (err && err.message) || String(err);
-        var inIframe = false;
-        try { inIframe = window.self !== window.top; } catch (e) { inIframe = true; }
-        if (inIframe && (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0)) {
-          setScanError("Camera access is blocked here because this page is running inside an embedded preview (e.g. a chat window), which browsers don't allow camera access in by default — there's no permission prompt to accept because it's blocked before that point. This isn't a bug: scanning will work normally once this page is opened as its own tab. For now, enter the food manually.");
-        } else if (!inIframe && (m.toLowerCase().indexOf("permission") >= 0 || m.toLowerCase().indexOf("notallowed") >= 0)) {
-          setScanError(
-            "Camera access was denied instantly, without ever showing a permission prompt. This almost always means one of two things:\n\n" +
-            "1) You're opening this link inside an app's built-in browser (Instagram, Facebook, TikTok, LinkedIn, X, etc.) rather than Safari/Chrome directly — these in-app browsers commonly block camera access outright. Look for a \"open in browser\" / \"⋯\" menu option, or copy the link and paste it directly into Safari/Chrome.\n\n" +
-            "2) Your browser has a cached camera permission for this exact page from an earlier visit. Tap the site info / padlock icon next to the address bar → site settings → Camera → set to Allow (or \"reset permission\"), then reload the page and try again."
-          );
-        } else if (m.indexOf("all sources failed") >= 0) {
-          setScanError("Couldn't load the barcode scanner library (network/firewall issue). You can enter the food manually instead.");
-        } else {
-          setScanError("Couldn't start the camera: " + m + ". You can enter the food manually instead.");
-        }
-      });
-  }
-
-  function cancelScan() {
-    stopScanner();
-    setScanStatus("idle");
-    setScanError("");
-  }
-
-  if (!meal) {
-    return h("div", null,
-      h("p", { className: "hint" }, "Which meal is this for?"),
-      MEALS.map(function (m) {
-        return h("button", { key: m, onClick: function () { setMeal(m); }, className: "list-btn" }, m);
-      })
-    );
-  }
-
-  var options = knownFoods.length ? ["Quick add", "Manual", "Scan"] : ["Manual", "Scan"];
-
-  return h("div", null,
-    h("button", { onClick: function () { setMeal(null); }, className: "back-link" }, "‹ " + meal),
-    h(Segmented, { options: options, value: mode, onChange: setMode }),
-
-    mode === "Quick add" ? h("div", { className: "scroll-list" },
-      knownFoods.map(function (f) {
-        return h("button", { key: f.name, onClick: function () { fillFrom(f); }, className: "quick-item" },
-          h("div", { className: "quick-item-title" }, f.name),
-          h("div", { className: "quick-item-sub" }, f.calories + " cal · P " + f.protein + "g · C " + f.carbs + "g · Sugar " + f.sugar + "g · F " + f.fat + "g")
-        );
-      })
-    ) : null,
-
-    mode === "Scan" ? h("div", { className: "scan-box" },
-      scanStatus === "idle" ? h("div", null,
-        h("p", { className: "hint mb-4" }, "Uses your camera to read a barcode, then looks it up in the Open Food Facts database. You'll be able to review and edit the result before adding it."),
-        h("button", { onClick: startScan, className: "scan-btn" }, Icon("📷", 17), " Scan barcode")
-      ) : null,
-
-      scanStatus === "looking-up" ? h("div", { className: "scanning-text" }, "Looking up product…") : null,
-
-      // Camera container stays mounted throughout starting/scanning so Html5Qrcode
-      // always has a real DOM node to attach to — visibility is CSS-only, avoiding
-      // any race between React's render commit and the scanner library initializing.
-      h("div", { style: { display: (scanStatus === "starting" || scanStatus === "scanning") ? "block" : "none" } },
-        h("div", { id: scanContainerId, className: "scan-camera" }),
-        scanStatus === "starting" ? h("div", { className: "scanning-text mt-2" }, "Starting camera…") : null,
-        scanStatus === "scanning" ? h("p", { className: "hint mt-2 mb-2" }, "Point your camera at the barcode.") : null,
-        (scanStatus === "starting" || scanStatus === "scanning") ? h("button", { onClick: cancelScan, className: "scan-btn" }, "Cancel") : null
-      ),
-
-      scanStatus === "error" ? h("div", null,
-        h("p", { className: "hint mb-3", style: { color: "#f87171", whiteSpace: "pre-line" } }, scanError),
-        h("button", { onClick: startScan, className: "scan-btn" }, "Try again"),
-        h("button", { onClick: function () { setScanStatus("idle"); setMode("Manual"); }, className: "scan-btn" }, "Enter manually instead")
-      ) : null
-    ) : null,
-
-    mode === "Manual" ? h("div", null,
-      h(Field, {
-        label: "Food name", value: name, list: "known-foods-list",
-        onChange: function (e) {
-          var v = e.target.value;
-          setName(v);
-          if (entryMode === "Total") {
-            var match = knownFoods.filter(function (f) { return f.name.toLowerCase() === v.toLowerCase(); })[0];
-            if (match) fillFrom(match);
-            else setName(v); // fillFrom already sets name; keep typed text if no exact match
-          }
-        },
-        placeholder: "e.g. Grilled chicken"
-      }),
-      h("datalist", { id: "known-foods-list" },
-        knownFoods.map(function (f) { return h("option", { key: f.name, value: f.name }); })
-      ),
-      h(Segmented, { options: ["Total", "Per 100g"], value: entryMode, onChange: setEntryMode }),
-
-      entryMode === "Total" ? h("div", null,
-        h("div", { className: "grid-2" },
-          h(Field, { label: "Calories", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Protein (g)", value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Carbs (g)", value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Sugar (g)", value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
-        ),
-        h(Field, { label: "Fat (g)", value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" })
-      ) : h("div", null,
-        h("p", { className: "hint mb-2" }, "Enter the nutrition label's per-100" + weightUnit + " values, then the actual amount you're having — the totals below are calculated automatically."),
-        h("div", { className: "row-between mb-2" },
-          h("span", { className: "label-sm" }, "Measured in"),
-          h("div", { style: { width: "8rem" } }, h(Segmented, { options: ["g", "ml"], value: weightUnit, onChange: setWeightUnit }))
-        ),
-        h("div", { className: "grid-2" },
-          h(Field, { label: "Calories / 100" + weightUnit, value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Protein / 100" + weightUnit, value: protein, onChange: function (e) { setProtein(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Carbs / 100" + weightUnit, value: carbs, onChange: function (e) { setCarbs(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-          h(Field, { label: "Sugar / 100" + weightUnit, value: sugar, onChange: function (e) { setSugar(e.target.value); }, placeholder: "0", inputMode: "decimal" })
-        ),
-        h(Field, { label: "Fat / 100" + weightUnit, value: fat, onChange: function (e) { setFat(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Amount (" + weightUnit + ")", value: foodWeight, onChange: function (e) { setFoodWeight(e.target.value); }, placeholder: weightUnit === "g" ? "e.g. 300" : "e.g. 250", inputMode: "decimal" }),
-        computed ? h("div", { className: "computed-box" },
-          h("div", { className: "label-sm mb-1" }, "Calculated totals for " + (weightNum || 0) + weightUnit),
-          h("div", { className: "hint" }, computed.calories + " cal · P " + computed.protein + "g · C " + computed.carbs + "g · Sugar " + computed.sugar + "g · F " + computed.fat + "g")
-        ) : null
-      ),
-
-      h("button", {
-        onClick: submit,
-        disabled: entryMode === "Total" ? (!name.trim() || !calories) : (!name.trim() || !calories || !weightNum),
-        className: "btn-primary mt-2"
-      }, Icon("✎", 16), " Add food")
-    ) : null
-  );
-}
-
-// ---------- Workout entry ----------
-function AddWorkoutForm(props) {
-  var knownWorkouts = props.knownWorkouts;
-  var sMode = useState(knownWorkouts.length ? "Quick add" : "Manual"), mode = sMode[0], setMode = sMode[1];
-  var sName = useState(""), name = sName[0], setName = sName[1];
-  var sDur = useState(""), duration = sDur[0], setDuration = sDur[1];
-  var sCal = useState(""), calories = sCal[0], setCalories = sCal[1];
-
-  function fillFrom(w) {
-    setName(w.name); setDuration(String(w.durationMinutes)); setCalories(String(w.caloriesBurned));
-    setMode("Manual");
-  }
-  function submit() {
-    if (!name.trim() || !calories) return;
-    props.onAdd({ name: name.trim(), durationMinutes: parseFloat(duration) || 0, caloriesBurned: parseFloat(calories) || 0 });
-  }
-
-  var options = knownWorkouts.length ? ["Quick add", "Manual"] : ["Manual"];
-
-  return h("div", null,
-    knownWorkouts.length > 0 ? h(Segmented, { options: options, value: mode, onChange: setMode }) : null,
-    mode === "Quick add" ? h("div", { className: "scroll-list mb-2" },
-      knownWorkouts.map(function (w) {
-        return h("button", { key: w.name, onClick: function () { fillFrom(w); }, className: "quick-item" },
-          h("div", { className: "quick-item-title" }, w.name),
-          h("div", { className: "quick-item-sub" }, w.durationMinutes + " min · " + w.caloriesBurned + " cal")
-        );
-      })
-    ) : null,
-    mode === "Manual" ? h("div", null,
-      h(Field, {
-        label: "Activity name", value: name, list: "known-workouts-list",
-        onChange: function (e) {
-          var v = e.target.value;
-          setName(v);
-          var match = knownWorkouts.filter(function (w) { return w.name.toLowerCase() === v.toLowerCase(); })[0];
-          if (match) fillFrom(match);
-        },
-        placeholder: "e.g. Deadlift session"
-      }),
-      h("datalist", { id: "known-workouts-list" },
-        knownWorkouts.map(function (w) { return h("option", { key: w.name, value: w.name }); })
-      ),
-      h("div", { className: "grid-2" },
-        h(Field, { label: "Duration (min)", value: duration, onChange: function (e) { setDuration(e.target.value); }, placeholder: "0", inputMode: "decimal" }),
-        h(Field, { label: "Calories burned", value: calories, onChange: function (e) { setCalories(e.target.value); }, placeholder: "0", inputMode: "decimal" })
-      ),
-      h("button", { onClick: submit, disabled: !name.trim() || !calories, className: "btn-primary mt-2" }, "Add workout")
-    ) : null
-  );
-}
-
-// ---------- Goal card ----------
-function GoalCard(props) {
-  var goals = props.goals, unit = props.unit, currentWeightKg = props.currentWeightKg, startWeightKg = props.startWeightKg, sessionsThisWeek = props.sessionsThisWeek;
-  var currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
-  var targetDisplay = fromKg(goals.targetWeightKg, unit);
-  var startDisplay = startWeightKg != null ? fromKg(startWeightKg, unit) : null;
-  var weightPct = 0;
-  if (startWeightKg != null && goals.targetWeightKg) {
-    var span = startWeightKg - goals.targetWeightKg;
-    if (span !== 0) weightPct = ((startWeightKg - currentWeightKg) / span) * 100;
-  }
-  var workoutPct = goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0;
-
-  return h("div", { className: "card mb-4" },
-    h("div", { className: "row-between mb-3" },
-      h("div", { className: "row gap-2" }, Icon("🎯", 16, "text-lime"), h("span", { className: "card-title" }, "Goals")),
-      h("button", { onClick: props.onEdit, className: "icon-btn" }, Icon("✏️", 13))
-    ),
-    h("div", { className: "mb-4" },
-      h("div", { className: "row-between mb-1" },
-        h("span", { className: "label-sm" }, "Weight"),
-        h("span", { className: "value-mono" }, currentDisplay != null ? (currentDisplay + " → " + targetDisplay + " " + unit) : ("Target: " + targetDisplay + " " + unit))
-      ),
-      startDisplay != null ? h(ProgressBar, { pct: weightPct, color: "#a3e635" }) : h("p", { className: "hint" }, "Log a weight entry to start tracking progress.")
-    ),
-    h("div", null,
-      h("div", { className: "row-between mb-1" },
-        h("span", { className: "label-sm" }, "Workouts this week"),
-        h("span", { className: "value-mono" }, sessionsThisWeek + " / " + goals.workoutDays + " · " + goals.workoutMinutes + " min target")
-      ),
-      h(ProgressBar, { pct: workoutPct, color: "#fb923c" })
-    )
-  );
-}
-
-function DateNav(props) {
-  var selectedDate = props.selectedDate, onChange = props.onChange;
-  var isToday = selectedDate === dateKey();
-  var inputRef = useRef(null);
-  function openPicker() {
-    if (inputRef.current) {
-      if (inputRef.current.showPicker) { try { inputRef.current.showPicker(); } catch (e) { inputRef.current.focus(); } }
-      else { inputRef.current.focus(); }
-    }
-  }
-  return h("div", { className: "date-nav" },
-    h("button", { onClick: function () { onChange(addDays(selectedDate, -1)); }, className: "date-nav-arrow" }, "‹"),
-    h("button", { onClick: openPicker, className: "date-nav-label" }, isToday ? "Today" : formatShortDate(selectedDate)),
-    h("input", {
-      ref: inputRef, type: "date", value: selectedDate, max: dateKey(),
-      onChange: function (e) { if (e.target.value) onChange(e.target.value); },
-      className: "date-nav-hidden-input"
-    }),
-    h("button", { onClick: function () { if (!isToday) onChange(addDays(selectedDate, 1)); }, disabled: isToday, className: "date-nav-arrow" }, "›")
-  );
-}
-
-function FoodHistoryModal(props) {
-  var days = props.days; // [{date, calories, count}]
-  return h(Modal, { title: "Logged days", onClose: props.onClose },
-    days.length === 0 ? h("p", { className: "hint" }, "No days logged yet.") : null,
-    days.map(function (d) {
-      return h("button", { key: d.date, onClick: function () { props.onSelect(d.date); }, className: "history-row" },
-        h("div", null,
-          h("div", { className: "item-title-bold" }, formatShortDate(d.date)),
-          h("div", { className: "hint" }, d.count + " item" + (d.count === 1 ? "" : "s") + " logged")
-        ),
-        h("div", { className: "value-mono text-lime" }, d.calories + " cal")
-      );
-    })
-  );
-}
-
-function WorkoutHistoryModal(props) {
-  var days = props.days, weeklySummaries = props.weeklySummaries;
-  return h(Modal, { title: "Workout history", onClose: props.onClose },
-    h("div", { className: "row gap-2 mb-2" }, Icon("📅", 14, "text-lime"), h("span", { className: "card-title" }, "This week")),
-    days.length === 0 ? h("p", { className: "hint mb-4" }, "No workouts logged yet this week.") : null,
-    days.map(function (d) {
-      return h("button", { key: d.date, onClick: function () { props.onSelect(d.date); }, className: "history-row" },
-        h("div", null,
-          h("div", { className: "item-title-bold" }, formatShortDate(d.date)),
-          h("div", { className: "hint" }, d.count + " workout" + (d.count === 1 ? "" : "s"))
-        ),
-        h("div", { className: "value-mono text-orange" }, d.caloriesBurned + " cal")
-      );
-    }),
-    h("div", { className: "row gap-2 mt-5 mb-2" }, Icon("📊", 14, "text-lime"), h("span", { className: "card-title" }, "Previous weeks")),
-    weeklySummaries.length === 0
-      ? h("p", { className: "hint" }, "Once a week ends (Sunday night), it's automatically rolled up here as a weekly overview instead of individual days.")
-      : weeklySummaries.slice().reverse().map(function (s) {
-          return h("div", { key: s.weekKey, className: "summary-item" },
-            h("div", { className: "summary-title" }, "Week of " + s.weekKey),
-            h("div", { className: "summary-line" }, s.workoutCount + " workouts · " + s.caloriesBurned + " cal burned")
-          );
-        })
-  );
-}
-
-function SummariesModal(props) {
-  return h(Modal, { title: "History", onClose: props.onClose },
-    h("div", { className: "row gap-2 mb-2" }, Icon("🕐", 14, "text-lime"), h("span", { className: "card-title" }, "Weekly summaries")),
-    props.weeklySummaries.length === 0 ? h("p", { className: "hint mb-4" }, "None yet — generated automatically each Sunday at 11:50pm.") : null,
-    props.weeklySummaries.slice().reverse().map(function (s) {
-      return h("div", { key: s.weekKey, className: "summary-item" },
-        h("div", { className: "summary-title" }, "Week of " + s.weekKey),
-        h("div", { className: "summary-line" }, "Avg cal/day: " + s.avgCalories + " · Workouts: " + s.workoutCount + " · Burned: " + s.caloriesBurned + " cal"),
-        h("div", { className: "summary-line" }, "Protein " + s.totalProtein + "g · Carbs " + s.totalCarbs + "g · Sugar " + s.totalSugar + "g · Fat " + s.totalFat + "g")
-      );
-    }),
-    h("div", { className: "row gap-2 mt-5 mb-2" }, Icon("📊", 14, "text-lime"), h("span", { className: "card-title" }, "Monthly summaries")),
-    props.monthlySummaries.length === 0 ? h("p", { className: "hint" }, "None yet — generated automatically on the last day of the month at 11:50pm.") : null,
-    props.monthlySummaries.slice().reverse().map(function (s) {
-      return h("div", { key: s.monthKey, className: "summary-item" },
-        h("div", { className: "summary-title" }, s.monthKey),
-        h("div", { className: "summary-line" }, "Avg cal/day: " + s.avgCalories + " · Workouts: " + s.workoutCount + " · Burned: " + s.caloriesBurned + " cal"),
-        h("div", { className: "summary-line" }, "Protein " + s.totalProtein + "g · Carbs " + s.totalCarbs + "g · Sugar " + s.totalSugar + "g · Fat " + s.totalFat + "g")
-      );
-    })
-  );
-}
-
-// ---------- Main app ----------
-var TABS = [
-  { key: "dashboard", label: "Today", glyph: "🏠" },
-  { key: "food", label: "Food", glyph: "🍽️" },
-  { key: "workouts", label: "Train", glyph: "🏋️" },
-  { key: "weight", label: "Weight", glyph: "⚖️" }
-];
-
-function Datum() {
-  var sTab = useState("dashboard"), tab = sTab[0], setTab = sTab[1];
-  var sSettings = useState(false), settingsOpen = sSettings[0], setSettingsOpen = sSettings[1];
-  var sGoalModal = useState(false), goalModalOpen = sGoalModal[0], setGoalModalOpen = sGoalModal[1];
-  var sSummaries = useState(false), summariesOpen = sSummaries[0], setSummariesOpen = sSummaries[1];
-  var sUnit = useState(function () { return loadKey("unit", "kg"); }), unit = sUnit[0], setUnit = sUnit[1];
-
-  var sGoals = useState(function () { return loadKey("goals", { targetWeightKg: 75, calorieGoal: 2200, workoutMinutes: 40, workoutDays: 3 }); });
-  var goals = sGoals[0], setGoals = sGoals[1];
-  var macroGoals = { protein: 150, carbs: 220, sugar: 50, fat: 70 };
-
-  var sFood = useState(function () { return loadKey("foodEntries", []); }), foodEntries = sFood[0], setFoodEntries = sFood[1];
-  var sWorkouts = useState(function () { return loadKey("workouts", []); }), workouts = sWorkouts[0], setWorkouts = sWorkouts[1];
-  var sWeights = useState(function () { return loadKey("weights", []); }), weights = sWeights[0], setWeights = sWeights[1];
-  var sWeekly = useState(function () { return loadKey("weeklySummaries", []); }), weeklySummaries = sWeekly[0], setWeeklySummaries = sWeekly[1];
-  var sMonthly = useState(function () { return loadKey("monthlySummaries", []); }), monthlySummaries = sMonthly[0], setMonthlySummaries = sMonthly[1];
-  var lastWeekChecked = useRef(loadKey("lastWeekSummarized", null));
-  var lastMonthChecked = useRef(loadKey("lastMonthSummarized", null));
-
-  var sFoodModal = useState(false), foodModalOpen = sFoodModal[0], setFoodModalOpen = sFoodModal[1];
-  var sWorkoutModal = useState(false), workoutModal = sWorkoutModal[0], setWorkoutModal = sWorkoutModal[1];
-  var sWeightInput = useState(""), weightInput = sWeightInput[0], setWeightInput = sWeightInput[1];
-  var sImportMsg = useState(""), importMessage = sImportMsg[0], setImportMessage = sImportMsg[1];
-  var fileInputRef = useRef(null);
-  var sSelectedDate = useState(function () { return dateKey(); }), selectedDate = sSelectedDate[0], setSelectedDate = sSelectedDate[1];
-  var sFoodHistoryOpen = useState(false), foodHistoryOpen = sFoodHistoryOpen[0], setFoodHistoryOpen = sFoodHistoryOpen[1];
-  var sWorkoutHistoryOpen = useState(false), workoutHistoryOpen = sWorkoutHistoryOpen[0], setWorkoutHistoryOpen = sWorkoutHistoryOpen[1];
-  var sNow = useState(function () { return new Date(); }), nowClock = sNow[0], setNowClock = sNow[1];
-
-  useEffect(function () {
-    var id = setInterval(function () { setNowClock(new Date()); }, 30000);
-    return function () { clearInterval(id); };
-  }, []);
-
-  useEffect(function () { saveKey("foodEntries", foodEntries); }, [foodEntries]);
-  useEffect(function () { saveKey("workouts", workouts); }, [workouts]);
-  useEffect(function () { saveKey("weights", weights); }, [weights]);
-  useEffect(function () { saveKey("weeklySummaries", weeklySummaries); }, [weeklySummaries]);
-  useEffect(function () { saveKey("monthlySummaries", monthlySummaries); }, [monthlySummaries]);
-  useEffect(function () { saveKey("goals", goals); }, [goals]);
-  useEffect(function () { saveKey("unit", unit); }, [unit]);
-
-  function aggregate(entries, wos) {
-    var totals = entries.reduce(function (a, e) {
-      return { calories: a.calories + e.calories, protein: a.protein + e.protein, carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat };
-    }, { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
-    var days = new Set(entries.map(function (e) { return e.date; })).size || 1;
-    return {
-      avgCalories: Math.round(totals.calories / days),
-      totalProtein: Math.round(totals.protein), totalCarbs: Math.round(totals.carbs),
-      totalSugar: Math.round(totals.sugar), totalFat: Math.round(totals.fat),
-      workoutCount: wos.length,
-      caloriesBurned: wos.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)
-    };
-  }
-
-  useEffect(function () {
-    function check() {
-      var now = new Date();
-      var wk = weekKey(now);
-      if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() >= 50 && lastWeekChecked.current !== wk) {
-        var weekStart = startOfWeek(now);
-        var entries = foodEntries.filter(function (e) { return new Date(e.date) >= weekStart; });
-        var wos = workouts.filter(function (w) { return new Date(w.date) >= weekStart; });
-        if (entries.length || wos.length) {
-          setWeeklySummaries(function (prev) { return prev.concat([Object.assign({ weekKey: wk }, aggregate(entries, wos))]); });
-        }
-        lastWeekChecked.current = wk; saveKey("lastWeekSummarized", wk);
-      }
-      var mk = monthKey(now);
-      if (isLastDayOfMonth(now) && now.getHours() === 23 && now.getMinutes() >= 50 && lastMonthChecked.current !== mk) {
-        var mEntries = foodEntries.filter(function (e) { return e.date.slice(0, 7) === mk; });
-        var mWos = workouts.filter(function (w) { return w.date.slice(0, 7) === mk; });
-        if (mEntries.length || mWos.length) {
-          setMonthlySummaries(function (prev) { return prev.concat([Object.assign({ monthKey: mk }, aggregate(mEntries, mWos))]); });
-        }
-        lastMonthChecked.current = mk; saveKey("lastMonthSummarized", mk);
-      }
-    }
-    check();
-    var id = setInterval(check, 30000);
-    return function () { clearInterval(id); };
-  }, [foodEntries, workouts]);
-
-  var today = dateKey();
-  var viewedFood = useMemo(function () { return foodEntries.filter(function (e) { return e.date === selectedDate; }); }, [foodEntries, selectedDate]);
-  var viewedWorkouts = useMemo(function () { return workouts.filter(function (w) { return w.date === selectedDate; }); }, [workouts, selectedDate]);
-
-  var totals = useMemo(function () {
-    return viewedFood.reduce(function (a, e) {
-      return { calories: a.calories + e.calories, protein: a.protein + e.protein, carbs: a.carbs + e.carbs, sugar: a.sugar + e.sugar, fat: a.fat + e.fat };
-    }, { calories: 0, protein: 0, carbs: 0, sugar: 0, fat: 0 });
-  }, [viewedFood]);
-
-  var foodHistoryDays = useMemo(function () {
-    var byDate = new Map();
-    foodEntries.forEach(function (e) {
-      var entry = byDate.get(e.date) || { date: e.date, calories: 0, count: 0 };
-      entry.calories += e.calories; entry.count += 1;
-      byDate.set(e.date, entry);
-    });
-    return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; }).map(function (d) {
-      return { date: d.date, calories: Math.round(d.calories), count: d.count };
-    });
-  }, [foodEntries]);
-
-  var knownFoods = useMemo(function () {
-    var byName = new Map();
-    foodEntries.forEach(function (e) { byName.set(e.name, e); });
-    return Array.from(byName.values()).reverse().slice(0, 20);
-  }, [foodEntries]);
-
-  var knownWorkouts = useMemo(function () {
-    var byName = new Map();
-    workouts.forEach(function (w) { byName.set(w.name, w); });
-    return Array.from(byName.values()).reverse().slice(0, 20);
-  }, [workouts]);
-
-  var displayWeights = weights.map(function (w) { return Object.assign({}, w, { display: fromKg(w.kg, unit) }); });
-  var currentWeightKg = weights.length ? weights[weights.length - 1].kg : null;
-  var startWeightKg = weights.length ? weights[0].kg : null;
-  var currentDisplay = currentWeightKg != null ? fromKg(currentWeightKg, unit) : null;
-
-  var sessionsThisWeek = useMemo(function () {
-    var wk = startOfWeek();
-    return workouts.filter(function (w) { return new Date(w.date) >= wk; }).length;
-  }, [workouts]);
-
-  var weekWorkoutsByDay = useMemo(function () {
-    var wk = startOfWeek();
-    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
-    var byDate = new Map();
-    inWeek.forEach(function (w) {
-      var list = byDate.get(w.date) || [];
-      list.push(w);
-      byDate.set(w.date, list);
-    });
-    return Array.from(byDate.entries())
-      .sort(function (a, b) { return a[0] < b[0] ? 1 : -1; })
-      .map(function (pair) { return { date: pair[0], items: pair[1] }; });
-  }, [workouts]);
-
-  var workoutHistoryDays = useMemo(function () {
-    var wk = startOfWeek();
-    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
-    var byDate = new Map();
-    inWeek.forEach(function (w) {
-      var entry = byDate.get(w.date) || { date: w.date, caloriesBurned: 0, count: 0 };
-      entry.caloriesBurned += w.caloriesBurned; entry.count += 1;
-      byDate.set(w.date, entry);
-    });
-    return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
-  }, [workouts]);
-
-  function addFood(meal, entry) {
-    var now = new Date();
-    setFoodEntries(function (prev) { return prev.concat([Object.assign({ id: uid(), meal: meal, date: selectedDate, timestamp: now.getTime() }, entry)]); });
-    setFoodModalOpen(false);
-  }
-  function removeFood(id) { setFoodEntries(function (prev) { return prev.filter(function (e) { return e.id !== id; }); }); }
-
-  function addWorkout(entry) {
-    var now = new Date();
-    setWorkouts(function (prev) { return prev.concat([Object.assign({ id: uid(), date: selectedDate, timestamp: now.getTime() }, entry)]); });
-    setWorkoutModal(false);
-  }
-  function removeWorkout(id) { setWorkouts(function (prev) { return prev.filter(function (w) { return w.id !== id; }); }); }
-
-  function logWeight() {
-    var val = parseFloat(weightInput);
-    if (!val || val <= 0) return;
-    var kg = toKg(val, unit);
-    var now = new Date();
-    setWeights(function (prev) { return prev.concat([{ id: uid(), date: dateKey(now), day: dateKey(now).slice(5), kg: kg }]); });
-    setWeightInput("");
-  }
-
-  function exportData() {
-    var payload = {
-      exportedAt: new Date().toISOString(),
-      app: "Datum",
-      version: 1,
-      foodEntries: foodEntries, workouts: workouts, weights: weights,
-      weeklySummaries: weeklySummaries, monthlySummaries: monthlySummaries,
-      goals: goals, unit: unit
-    };
-    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  componentWillUnmount() { clearInterval(this._t); }
+
+  exportData() {
+    var data = { unit: this.state.unit, theme: this.state.theme, weightLog: this.weightLog() };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "datum-export-" + dateKey() + ".json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'datum-export.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  function importData(file) {
+  handleImportFile(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
     var reader = new FileReader();
-    reader.onload = function () {
+    reader.onload = () => {
       try {
         var data = JSON.parse(reader.result);
-        if (!data || typeof data !== "object") throw new Error("not an object");
-        if (Array.isArray(data.foodEntries)) setFoodEntries(data.foodEntries);
-        if (Array.isArray(data.workouts)) setWorkouts(data.workouts);
-        if (Array.isArray(data.weights)) setWeights(data.weights);
-        if (Array.isArray(data.weeklySummaries)) setWeeklySummaries(data.weeklySummaries);
-        if (Array.isArray(data.monthlySummaries)) setMonthlySummaries(data.monthlySummaries);
-        if (data.goals && typeof data.goals === "object") setGoals(data.goals);
-        if (typeof data.unit === "string") setUnit(data.unit);
-        setImportMessage("Import successful.");
-      } catch (e) {
-        setImportMessage("Import failed: the file isn't a valid Datum export.");
-      }
+        var next = {};
+        if (data.unit === 'kg' || data.unit === 'lbs' || data.unit === 'st') next.unit = data.unit;
+        if (data.theme === 'dark' || data.theme === 'light') next.theme = data.theme;
+        this.setState(next);
+      } catch (err) {}
     };
-    reader.onerror = function () { setImportMessage("Import failed: couldn't read the file."); };
     reader.readAsText(file);
+    e.target.value = '';
   }
 
-  var headerLogo = h("svg", { width: 14, height: 14, viewBox: "0 0 64 64" },
-    h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#27272a", strokeWidth: 10 }),
-    h("circle", { cx: 32, cy: 32, r: 26, fill: "none", stroke: "#a3e635", strokeWidth: 10, strokeDasharray: 2 * Math.PI * 26, strokeDashoffset: 2 * Math.PI * 26 * 0.3, strokeLinecap: "round", transform: "rotate(-90 32 32)" })
-  );
+  weightLog() {
+    // 6 weeks of logged weigh-ins, most recent last, in kg
+    return [
+      { label: 'Jun 05', short: '6/5', kg: 82.0 }, { label: 'Jun 12', short: '6/12', kg: 81.1 }, { label: 'Jun 19', short: '6/19', kg: 80.2 },
+      { label: 'Jun 26', short: '6/26', kg: 79.4 }, { label: 'Jul 03', short: '7/3', kg: 78.9 }, { label: 'Jul 07', short: '7/7', kg: 79.1 },
+      { label: 'Jul 14', short: '7/14', kg: 78.4 }
+    ];
+  }
 
-  var header = h("div", { className: "header" },
-    h("div", null,
-      h("div", { className: "row gap-1-5 mb-0-5" }, headerLogo, h("span", { className: "brand" }, "Datum")),
-      h("div", { className: "page-title-row" },
-        h("span", { className: "page-title" },
-          tab === "dashboard" ? "Today" : tab === "food" ? "Food Log" : tab === "workouts" ? "Training" : "Weight"
-        ),
-        h("span", { className: "header-clock" }, formatShortDate(dateKey(nowClock)) + " · " + formatTime(nowClock))
-      )
-    ),
-    h("div", { className: "row gap-2" },
-      h("button", { onClick: function () { setSummariesOpen(true); }, className: "icon-btn" }, Icon("🕐", 16)),
-      h("button", { onClick: function () { setSettingsOpen(true); }, className: "icon-btn" }, Icon("⚙️", 16))
-    )
-  );
+  fmtWeight(kg, unit) {
+    if (unit === 'kg') return kg.toFixed(1) + ' kg';
+    var lbs = kg * 2.20462;
+    if (unit === 'lbs') return lbs.toFixed(1) + ' lbs';
+    var st = Math.floor(lbs / 14);
+    var rem = Math.round(lbs - st * 14);
+    if (rem === 14) { st += 1; rem = 0; }
+    return st + 'st ' + rem + 'lb';
+  }
 
-  var dashboardBody = tab !== "dashboard" ? null : h("div", null,
-    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
+  fmtDelta(kgDelta, unit) {
+    var sign = kgDelta > 0 ? '+' : '';
+    if (unit === 'kg') return sign + kgDelta.toFixed(1);
+    var lbs = kgDelta * 2.20462;
+    return sign + lbs.toFixed(1);
+  }
 
-    h(GoalCard, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg, sessionsThisWeek: sessionsThisWeek, onEdit: function () { setGoalModalOpen(true); } }),
+  renderVals() {
+    var s = this.state;
+    var dark = s.theme === 'dark';
+    var palettes = {
+      dark: { bg: '#0d0d10', surface: '#17171b', border: '#26262b', text: '#f2f2f4', subtext: '#82828a', lime: '#a3e635', cyan: '#1fd8c9', orange: '#ff7a29', pink: '#ff4f95', blue: '#5da2ff' },
+      light: { bg: '#fbf5ee', surface: '#ffffff', border: '#ece2d2', text: '#21170f', subtext: '#8a7c6c', lime: '#6b9b1f', cyan: '#12958a', orange: '#e8672c', pink: '#d63e82', blue: '#3f6fe0' }
+    };
+    var p = palettes[dark ? 'dark' : 'light'];
+    var ringOffset = (pct, c) => c - Math.min(pct, 100) / 100 * c;
 
-    h("div", { className: "counter-card" },
-      h(ProgressRing, {
-        pct: goals.calorieGoal > 0 ? (totals.calories / goals.calorieGoal) * 100 : 0,
-        size: 168, stroke: 15, color: "#a3e635"
-      },
-        h("div", { className: "ring-calorie-center" },
-          h("div", { className: "counter-number" }, Math.round(totals.calories), h("span", { className: "counter-goal" }, "/" + goals.calorieGoal)),
-          h("div", { className: "counter-label" }, selectedDate === today ? "calories today" : formatShortDate(selectedDate))
-        )
-      )
-    ),
+    var todayDow = new Date().getDay();
+    var mondayOffset = todayDow === 0 ? -6 : 1 - todayDow;
+    var setTab = (t) => this.setState({ tab: t });
+    var pillActive = p.text, pillActiveText = p.bg, pillInactiveText = p.subtext;
 
-    h("div", { className: "card mb-4" },
-      h("div", { className: "row-between mb-3" },
-        h("span", { className: "card-title" }, "Nutrition")
-      ),
-      h("div", { className: "macro-ring-row" },
-        h(MacroRing, { label: "Protein", current: totals.protein, goal: macroGoals.protein, color: "#a3e635" }),
-        h(MacroRing, { label: "Carbs", current: totals.carbs, goal: macroGoals.carbs, color: "#fb923c" }),
-        h(MacroRing, { label: "Sugar", current: totals.sugar, goal: macroGoals.sugar, color: "#f472b6" }),
-        h(MacroRing, { label: "Fat", current: totals.fat, goal: macroGoals.fat, color: "#60a5fa" })
-      )
-    ),
+    var log = this.weightLog();
+    var unit = s.unit;
+    var current = log[log.length - 1].kg, start = log[0].kg, target = 75.0;
 
-    h("div", { className: "card mb-4" },
-      h("div", { className: "row-between mb-3" },
-        h("span", { className: "card-title" }, selectedDate === today ? "Today's workout" : "Workout")
-      ),
-      viewedWorkouts.length === 0
-        ? h("p", { className: "hint" }, selectedDate === today ? "No workout logged today." : "No workout logged this day.")
-        : h("div", null, viewedWorkouts.map(function (w) {
-            return h("div", { key: w.id, className: "workout-row" },
-              h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
-              h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
-            );
-          }))
-    ),
+    var minKg = Math.min.apply(null, log.map(r => r.kg)), maxKg = Math.max.apply(null, log.map(r => r.kg));
+    var range = Math.max(maxKg - minKg, 0.1);
+    var plotX0 = 34, plotX1 = 316, plotY0 = 10, plotY1 = 88;
+    var points = log.map((r, i) => {
+      var x = plotX0 + (i / (log.length - 1)) * (plotX1 - plotX0);
+      var y = plotY0 + (1 - (r.kg - minKg) / range) * (plotY1 - plotY0);
+      return { x: Math.round(x), y: Math.round(y) };
+    });
+    var path = points.map((pt, i) => (i === 0 ? 'M' : 'L') + pt.x + ',' + pt.y).join(' ');
+    var dateLabels = log.map((r, i) => ({ x: points[i].x, text: r.short }));
+    var weightAxisLabels = [
+      { y: plotY0 + 4, text: maxKg.toFixed(1) },
+      { y: plotY1 + 4, text: minKg.toFixed(1) }
+    ];
 
-    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log food"),
-    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log workout"),
-    h("button", { onClick: function () { setTab("weight"); }, className: "btn-primary" }, Icon("➕", 16), " Log weight")
-  );
+    var weekdayLabels = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+    var now2 = new Date(); now2.setHours(0, 0, 0, 0);
+    var year = now2.getFullYear(), month = now2.getMonth();
+    var firstOfMonth = new Date(year, month, 1);
+    var startWeekday = (firstOfMonth.getDay() + 6) % 7;
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var cells = [];
+    for (var i = 0; i < startWeekday; i++) cells.push({ day: '', disabled: true, bg: 'transparent', border: 'transparent', color: p.subtext });
+    for (var d = 1; d <= daysInMonth; d++) {
+      var cellDate = new Date(year, month, d);
+      var diffDays = Math.round((cellDate - now2) / 86400000);
+      var isToday = diffDays === 0;
+      var isSelected = diffDays === s.dateOffset;
+      var future = diffDays > 0;
+      cells.push({
+        day: d, disabled: future,
+        bg: isSelected ? p.lime : 'transparent',
+        border: isToday ? p.lime : p.border,
+        color: isSelected ? p.bg : (future ? p.border : p.text),
+        select: future ? null : (() => { var off = diffDays; return () => this.setState({ dateOffset: off, calendarOpen: false }); })()
+      });
+    }
 
-  var foodBody = tab !== "food" ? null : h("div", null,
-    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
-    MEALS.map(function (meal) {
-      var entries = viewedFood.filter(function (e) { return e.meal === meal; });
-      var cals = entries.reduce(function (s, e) { return s + e.calories; }, 0);
-      return h("div", { key: meal, className: "card mb-3" },
-        h("div", { className: "row-between mb-2" }, h("span", { className: "card-title" }, meal), h("span", { className: "value-mono" }, cals + " cal")),
-        entries.map(function (e) {
-          return h("div", { key: e.id, className: "food-row", onDoubleClick: function () { removeFood(e.id); } },
-            h("div", null,
-              h("div", { className: "item-title" }, e.name),
-              h("div", { className: "hint" }, "P " + e.protein + "g · C " + e.carbs + "g (sugar " + e.sugar + "g) · F " + e.fat + "g")
-            ),
-            h("div", { className: "value-mono text-lime" }, e.calories)
-          );
-        })
-      );
-    }),
-    h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary mb-2" }, Icon("➕", 16), " Log food"),
-    h("button", { onClick: function () { setFoodHistoryOpen(true); }, className: "list-btn" }, Icon("🕐", 15), "  View history")
-  );
+    return {
+      bg: p.bg, surface: p.surface, border: p.border, text: p.text, subtext: p.subtext,
+      lime: p.lime, cyan: p.cyan, orange: p.orange, pink: p.pink, blue: p.blue,
 
-  var workoutsBody = tab !== "workouts" ? null : h("div", null,
-    h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
-    h("div", { className: "card center mb-4" },
-      h("div", { className: "big-number" }, viewedWorkouts.reduce(function (s, w) { return s + w.caloriesBurned; }, 0)),
-      h("div", { className: "counter-label" }, selectedDate === today ? "calories burned today" : "calories burned this day")
-    ),
-    h("div", { className: "card mb-4" },
-      h("div", { className: "row-between mb-1" },
-        h("span", { className: "label-sm" }, "This week"),
-        h("span", { className: "value-mono" }, sessionsThisWeek + " / " + goals.workoutDays + " sessions")
-      ),
-      h(ProgressBar, { pct: goals.workoutDays > 0 ? (sessionsThisWeek / goals.workoutDays) * 100 : 0, color: "#fb923c" })
-    ),
-    viewedWorkouts.map(function (w) {
-      return h("div", { key: w.id, className: "card row-between mb-2", onDoubleClick: function () { removeWorkout(w.id); } },
-        h("div", null, h("div", { className: "item-title-bold" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min · double-tap to remove")),
-        h("div", { className: "value-mono text-lime" }, w.caloriesBurned)
-      );
-    }),
-    viewedWorkouts.length === 0 ? h("div", { className: "empty-state" }, "No workouts logged this day.") : null,
-    h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary mt-2 mb-2" }, Icon("➕", 16), " Log workout"),
-    h("button", { onClick: function () { setWorkoutHistoryOpen(true); }, className: "list-btn mb-4" }, Icon("🕐", 15), "  View history"),
+      isDash: s.tab === 'dashboard', isFood: s.tab === 'food', isTrain: s.tab === 'workouts', isWeight: s.tab === 'weight',
+      setTab_dash: () => setTab('dashboard'), setTab_food: () => setTab('food'), setTab_train: () => setTab('workouts'), setTab_weight: () => setTab('weight'),
+      pillDashBg: s.tab === 'dashboard' ? pillActive : 'transparent', pillDashColor: s.tab === 'dashboard' ? pillActiveText : pillInactiveText,
+      pillFoodBg: s.tab === 'food' ? pillActive : 'transparent', pillFoodColor: s.tab === 'food' ? pillActiveText : pillInactiveText,
+      pillTrainBg: s.tab === 'workouts' ? pillActive : 'transparent', pillTrainColor: s.tab === 'workouts' ? pillActiveText : pillInactiveText,
+      pillWeightBg: s.tab === 'weight' ? pillActive : 'transparent', pillWeightColor: s.tab === 'weight' ? pillActiveText : pillInactiveText,
 
-    h("div", { className: "label-sm mb-2" }, "This week"),
-    weekWorkoutsByDay.length === 0 ? h("p", { className: "hint" }, "Nothing logged yet this week.") : null,
-    weekWorkoutsByDay.map(function (group) {
-      var dayTotal = group.items.reduce(function (s, w) { return s + w.caloriesBurned; }, 0);
-      return h("div", { key: group.date, className: "card mb-3" },
-        h("div", { className: "row-between mb-2" },
-          h("span", { className: "card-title" }, group.date === today ? "Today" : formatShortDate(group.date)),
-          h("span", { className: "value-mono" }, dayTotal + " cal")
-        ),
-        group.items.map(function (w) {
-          return h("div", { key: w.id, className: "workout-row" },
-            h("div", null, h("div", { className: "item-title" }, w.name), h("div", { className: "hint" }, w.durationMinutes + " min")),
-            h("div", { className: "value-mono text-orange" }, w.caloriesBurned + " cal")
-          );
-        })
-      );
-    })
-  );
+      dateNavLabel: s.dateOffset === 0 ? 'Today' : (() => { var d = new Date(); d.setDate(d.getDate() + s.dateOffset); return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }); })(),
+      isToday: s.dateOffset >= 0,
+      isAtWeekStart: s.dateOffset <= mondayOffset,
+      forwardArrowColor: s.dateOffset >= 0 ? p.border : p.lime,
+      backArrowColor: s.dateOffset <= mondayOffset ? p.border : p.lime,
+      backArrowCursor: s.dateOffset <= mondayOffset ? 'default' : 'pointer',
+      dateBack: () => this.setState(st => ({ dateOffset: Math.max(mondayOffset, st.dateOffset - 1) })),
+      dateForward: () => this.setState(st => ({ dateOffset: Math.min(0, st.dateOffset + 1) })),
 
-  var weightBody = tab !== "weight" ? null : h("div", null,
-    h("div", { className: "row gap-2 mb-4" },
-      h("input", {
-        value: weightInput, onChange: function (e) { setWeightInput(e.target.value); },
-        placeholder: "Today's weight (" + unit + ")", inputMode: "decimal", className: "weight-input"
-      }),
-      h("button", { onClick: logWeight, className: "log-btn" }, "Log")
-    ),
-    currentDisplay !== null ? h("div", { className: "row gap-2 mb-4" },
-      h("div", { className: "stat-box" }, h("div", { className: "stat-num" }, currentDisplay), h("div", { className: "hint" }, "Current (" + unit + ")")),
-      h("div", { className: "stat-box" }, h("div", { className: "stat-num" }, (currentDisplay - displayWeights[0].display).toFixed(1)), h("div", { className: "hint" }, "Since start"))
-    ) : null,
-    displayWeights.length >= 2 ? h("div", { className: "card mb-4" }, h(SimpleLineChart, { data: displayWeights, dataKey: "display", labelKey: "day", height: 200 })) : null,
-    displayWeights.length === 0 ? h("div", { className: "empty-state" }, "No weight logged yet.") : null,
-    displayWeights.slice().reverse().map(function (w) {
-      return h("div", { key: w.id, className: "weight-row" },
-        h("span", { className: "hint" }, w.date),
-        h("span", { className: "value-mono-bold" }, w.display + " " + unit)
-      );
-    })
-  );
+      calRingOffset: ringOffset(65.9, 239),
+      proteinRingOffset: ringOffset(61.3, 107),
+      carbRingOffset: ringOffset(63.6, 107),
+      fatRingOffset: ringOffset(68.6, 107),
 
-  var tabBar = h("div", { className: "tabbar" },
-    TABS.map(function (t) {
-      return h("button", {
-        key: t.key, onClick: function () { setTab(t.key); },
-        className: "tab-btn" + (tab === t.key ? " tab-btn-active" : "")
-      }, Icon(t.glyph, 19), h("span", { className: "tab-label" }, t.label));
-    })
-  );
+      weightGoalLabel: this.fmtWeight(start, unit) + ' \u2192 ' + this.fmtWeight(target, unit),
+      weightGoalPct: Math.round((start - current) / (start - target) * 100),
+      weightCurrentLabel: this.fmtWeight(current, unit),
+      weightDeltaLabel: this.fmtDelta(current - start, unit),
+      weightTargetLabel: this.fmtWeight(target, unit),
+      weightChartPath: path,
+      weightChartPoints: points,
+      weightDateLabels: dateLabels,
+      weightAxisLabels: weightAxisLabels,
+      weightLogRows: log.slice().reverse().map(r => ({ label: r.label, valueLabel: this.fmtWeight(r.kg, unit) })),
 
-  var modals = h(React.Fragment, null,
-    foodModalOpen ? h(Modal, { title: "Log food", onClose: function () { setFoodModalOpen(false); } }, h(AddFoodFlow, { onAdd: addFood, knownFoods: knownFoods })) : null,
-    workoutModal ? h(Modal, { title: "Log workout", onClose: function () { setWorkoutModal(false); } }, h(AddWorkoutForm, { onAdd: addWorkout, knownWorkouts: knownWorkouts })) : null,
-    goalModalOpen ? h(Modal, { title: "Edit goals", onClose: function () { setGoalModalOpen(false); } }, h(EditGoalsForm, { goals: goals, unit: unit, onSave: function (g) { setGoals(g); setGoalModalOpen(false); } })) : null,
-    summariesOpen ? h(SummariesModal, { weeklySummaries: weeklySummaries, monthlySummaries: monthlySummaries, onClose: function () { setSummariesOpen(false); } }) : null,
-    foodHistoryOpen ? h(FoodHistoryModal, {
-      days: foodHistoryDays, onClose: function () { setFoodHistoryOpen(false); },
-      onSelect: function (date) { setSelectedDate(date); setFoodHistoryOpen(false); }
-    }) : null,
-    workoutHistoryOpen ? h(WorkoutHistoryModal, {
-      days: workoutHistoryDays, weeklySummaries: weeklySummaries, onClose: function () { setWorkoutHistoryOpen(false); },
-      onSelect: function (date) { setSelectedDate(date); setWorkoutHistoryOpen(false); }
-    }) : null,
-    settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
-      h("div", { className: "label-sm mb-2" }, "Weight unit"),
-      h(Segmented, { options: ["kg", "lbs"], value: unit, onChange: setUnit }),
-      h("p", { className: "hint mb-4" }, "Existing entries convert automatically."),
+      calendarOpen: s.calendarOpen, openCalendar: () => this.setState({ calendarOpen: true }), closeCalendar: () => this.setState({ calendarOpen: false }),
+      settingsOpen: s.settingsOpen, openSettings: () => this.setState({ settingsOpen: true }), closeSettings: () => this.setState({ settingsOpen: false }),
+      stop: (e) => e.stopPropagation(),
+      weekdayLabels: weekdayLabels, calendarCells: cells,
 
-      h("div", { className: "label-sm mb-2" }, "Your data"),
-      h("button", { onClick: exportData, className: "list-btn" }, Icon("⬇️", 15), "  Export all data (.json)"),
-      h("button", {
-        onClick: function () { fileInputRef.current && fileInputRef.current.click(); },
-        className: "list-btn"
-      }, Icon("⬆️", 15), "  Import data from file"),
-      h("input", {
-        type: "file", accept: "application/json,.json", ref: fileInputRef, style: { display: "none" },
-        onChange: function (e) {
-          var file = e.target.files && e.target.files[0];
-          if (file) importData(file);
-          e.target.value = "";
-        }
-      }),
-      importMessage ? h("p", { className: "hint", style: { color: importMessage.indexOf("failed") >= 0 ? "#f87171" : "#a3e635" } }, importMessage) : null,
+      fileInputRef: this.fileInputRef,
+      exportData: () => this.exportData(),
+      triggerImport: () => this.fileInputRef.current && this.fileInputRef.current.click(),
+      handleImportFile: (e) => this.handleImportFile(e),
 
-      !useRealStorage ? h("p", { className: "hint mt-2", style: { color: "#fb923c" } }, "Note: this preview can't access persistent storage here, so entries won't be saved between reloads. Once hosted in a real browser, your data will save normally.") : null
-    ) : null
-  );
+      unit: unit, setUnit_kg: () => this.setState({ unit: 'kg' }), setUnit_lbs: () => this.setState({ unit: 'lbs' }), setUnit_st: () => this.setState({ unit: 'st' }),
+      unitKgBg: unit === 'kg' ? p.lime : 'transparent', unitKgColor: unit === 'kg' ? p.bg : p.subtext,
+      unitLbsBg: unit === 'lbs' ? p.lime : 'transparent', unitLbsColor: unit === 'lbs' ? p.bg : p.subtext,
+      unitStBg: unit === 'st' ? p.lime : 'transparent', unitStColor: unit === 'st' ? p.bg : p.subtext,
 
-  return h("div", { className: "app-shell" }, header, h("div", { className: "app-body" }, dashboardBody, foodBody, workoutsBody, weightBody), tabBar, modals);
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+      themeTrackBg: p.surface, knobLeft: dark ? '2px' : '22px'
+    };
+  }
 }
 
-var rootEl = document.getElementById("root");
-ReactDOM.createRoot(rootEl).render(h(Datum));
-
-}
-</script>
-<script>
-  tryLoadFrom(0);
 </script>
 </body>
 </html>

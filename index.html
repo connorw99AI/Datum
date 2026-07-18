@@ -507,7 +507,7 @@ function CalorieCard(props) {
   var pct = goal > 0 ? (current / goal) * 100 : 0;
   return h("div", { className: "calorie-card-wrap" },
     h(ProgressRing, { pct: pct, size: 112, stroke: 13, color: "var(--lime)" },
-      h("span", { className: "calorie-ring-pct" }, Math.round(Math.min(100, pct)) + "%")
+      h("span", { className: "calorie-ring-pct", style: pct > 100 ? { color: "var(--lime)" } : null }, Math.round(pct) + "%")
     ),
     h("div", { className: "calorie-main" },
       h("div", { className: "eyebrow mb-1" }, label),

@@ -100,13 +100,14 @@ button { cursor: pointer; border: none; background: none; }
 .food-entry-row:first-child { border-top: none; }
 .food-entry-name { font: 600 12px 'Inter', sans-serif; color: var(--text); margin-bottom: 3px; }
 
-.week-bars { display: flex; align-items: flex-end; gap: 5px; height: 64px; padding: 0 4px; }
+.week-bars { display: flex; align-items: flex-end; gap: 5px; height: 108px; padding: 0 4px; }
 .week-bar-col { flex: 1; height: 100%; display: flex; align-items: flex-end; }
 .week-bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.2s ease; }
 .day-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .day-card { text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
 .day-card-name { font: 600 12px 'Inter', sans-serif; color: var(--text); margin: 4px 0; }
 .day-card-cal { font: 700 15px 'JetBrains Mono', monospace; }
+.last-week-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
 
 .weight-log-row-input { display: flex; align-items: stretch; gap: 8px; }
 .weight-input { flex: 1; box-sizing: border-box; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 13px; color: var(--text); outline: none; }
@@ -304,29 +305,27 @@ function formatShortDate(key) {
   var d = new Date(key + "T00:00:00");
   return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 }
-// Sunday-start week (used for the weekly summary compression system — unrelated
-// to the Monday-start quick-nav limit below, kept separate intentionally).
-function startOfWeekSunday(d) {
-  d = d || new Date();
-  var x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  x.setDate(x.getDate() - x.getDay());
-  return x;
+// Monday-start week (Mon..Sun) — used consistently everywhere: dashboard date-nav,
+// the Train tab's "this week" bar chart/day cards, and the weekly compression
+// system. A single definition avoids the two disagreeing about what day a
+// week starts/ends on (which previously caused entries to vanish on Sundays).
+function startOfWeekMonday(d) {
+  var x;
+  if (!d) x = new Date();
+  else if (typeof d === "string") x = new Date(d + "T00:00:00");
+  else x = new Date(d);
+  var dow = x.getDay(); // 0 = Sunday
+  var diff = dow === 0 ? -6 : 1 - dow;
+  return addDays(dateKey(x), diff);
 }
-function weekKey(d) { return dateKey(startOfWeekSunday(d)); }
+function weekKey(d) { return startOfWeekMonday(d); }
 function monthKey(d) { return dateKey(d).slice(0, 7); }
 function isLastDayOfMonth(d) {
   var next = new Date(d);
   next.setDate(next.getDate() + 1);
   return next.getDate() === 1;
 }
-// Monday-start week, used only for the dashboard's quick back/forward date arrows.
-function mondayOfThisWeek() {
-  var d = new Date();
-  var dow = d.getDay(); // 0 = Sunday
-  var diff = dow === 0 ? -6 : 1 - dow;
-  return addDays(dateKey(d), diff);
-}
+function mondayOfThisWeek() { return startOfWeekMonday(); }
 
 // ---------- unit conversion (kg / lbs / st) ----------
 function toKg(val, unit) {
@@ -905,7 +904,7 @@ function FoodHistoryModal(props) {
 }
 
 function WorkoutHistoryModal(props) {
-  var days = props.days, weeklySummaries = props.weeklySummaries;
+  var days = props.days, weeklySummaries = props.weeklySummaries, otherDays = props.otherDays;
   return h(Modal, { title: "Workout history", onClose: props.onClose },
     h("div", { className: "eyebrow mb-2" }, "THIS WEEK"),
     days.length === 0 ? h("p", { className: "hint mb-4" }, "No workouts logged yet this week.") : null,
@@ -920,22 +919,43 @@ function WorkoutHistoryModal(props) {
     }),
     h("div", { className: "eyebrow mt-5 mb-2" }, "PREVIOUS WEEKS"),
     weeklySummaries.length === 0
-      ? h("p", { className: "hint" }, "Once a week ends (Sunday night), it's automatically rolled up here instead of showing individual days.")
+      ? h("p", { className: "hint" }, "Once a week ends (Monday 1am), it's automatically rolled up here instead of showing individual days.")
       : weeklySummaries.slice().reverse().map(function (s) {
           return h("div", { key: s.weekKey, className: "summary-item" },
             h("div", { className: "summary-title" }, "Week of " + s.weekKey),
             h("div", { className: "summary-line" }, s.workoutCount + " workouts · " + s.caloriesBurned + " cal burned")
           );
-        })
+        }),
+    otherDays.length > 0 ? h("div", { className: "eyebrow mt-5 mb-2" }, "OTHER LOGGED DAYS") : null,
+    otherDays.length > 0 ? h("p", { className: "hint mb-2" }, "Older or imported entries that haven't been rolled into a weekly summary yet:") : null,
+    otherDays.map(function (d) {
+      return h("button", { key: d.date, onClick: function () { props.onSelect(d.date); }, className: "history-row" },
+        h("div", null,
+          h("div", { className: "item-title-bold" }, formatShortDate(d.date)),
+          h("div", { className: "hint" }, d.count + " workout" + (d.count === 1 ? "" : "s"))
+        ),
+        h("div", { className: "value-mono", style: { color: "var(--orange)" } }, d.caloriesBurned + " cal")
+      );
+    })
   );
 }
 
 function WeekBarChart(props) {
   // props.days: array of 7 entries (Mon..Sun) { date, calories, isToday, hasWorkout }
-  var maxCal = Math.max.apply(null, props.days.map(function (d) { return d.calories; }).concat([1]));
+  var workoutCals = props.days.filter(function (d) { return d.hasWorkout; }).map(function (d) { return d.calories; });
+  var maxCal = workoutCals.length ? Math.max.apply(null, workoutCals) : 1;
+  var minCal = workoutCals.length ? Math.min.apply(null, workoutCals) : 0;
+  var span = maxCal - minCal;
   return h("div", { className: "week-bars" },
     props.days.map(function (d) {
-      var pct = d.hasWorkout ? Math.max(18, (d.calories / maxCal) * 100) : 14;
+      var pct;
+      if (!d.hasWorkout) {
+        pct = 6; // flat baseline sliver for days with no workout
+      } else if (span === 0) {
+        pct = 100; // every workout day burned the same — all bars full
+      } else {
+        pct = 12 + ((d.calories - minCal) / span) * 88; // true relative scaling, highest = 100%, lowest = 12%
+      }
       var color = d.isToday ? "var(--lime)" : (d.hasWorkout ? "var(--cyan)" : "var(--border)");
       return h("div", { key: d.date, className: "week-bar-col" },
         h("div", { className: "week-bar", style: { height: pct + "%", background: color } })
@@ -1031,15 +1051,19 @@ function Datum() {
   useEffect(function () {
     function check() {
       var now = new Date();
-      var wk = weekKey(now);
-      if (now.getDay() === 0 && now.getHours() === 23 && now.getMinutes() >= 50 && lastWeekChecked.current !== wk) {
-        var weekStart = startOfWeekSunday(now);
-        var entries = foodEntries.filter(function (e) { return new Date(e.date) >= weekStart; });
-        var wos = workouts.filter(function (w) { return new Date(w.date) >= weekStart; });
-        if (entries.length || wos.length) {
-          setWeeklySummaries(function (prev) { return prev.concat([Object.assign({ weekKey: wk }, aggregate(entries, wos))]); });
+      if (now.getDay() === 1 && now.getHours() === 1 && now.getMinutes() < 30) {
+        var currentWeekStart = startOfWeekMonday(now);
+        var weekStartKey = addDays(currentWeekStart, -7);
+        var weekEnd = addDays(weekStartKey, 6);
+        var wk = weekStartKey;
+        if (lastWeekChecked.current !== wk) {
+          var entries = foodEntries.filter(function (e) { return e.date >= weekStartKey && e.date <= weekEnd; });
+          var wos = workouts.filter(function (w) { return w.date >= weekStartKey && w.date <= weekEnd; });
+          if (entries.length || wos.length) {
+            setWeeklySummaries(function (prev) { return prev.concat([Object.assign({ weekKey: wk }, aggregate(entries, wos))]); });
+          }
+          lastWeekChecked.current = wk; saveKey("lastWeekSummarized", wk);
         }
-        lastWeekChecked.current = wk; saveKey("lastWeekSummarized", wk);
       }
       var mk = monthKey(now);
       if (isLastDayOfMonth(now) && now.getHours() === 23 && now.getMinutes() >= 50 && lastMonthChecked.current !== mk) {
@@ -1097,13 +1121,13 @@ function Datum() {
   var startWeightKg = weights.length ? displayWeights[0].kg : null;
 
   var sessionsThisWeek = useMemo(function () {
-    var wk = startOfWeekSunday();
-    return workouts.filter(function (w) { return new Date(w.date) >= wk; }).length;
+    var wk = startOfWeekMonday();
+    return workouts.filter(function (w) { return w.date >= wk; }).length;
   }, [workouts]);
 
   var weekWorkoutsByDay = useMemo(function () {
-    var wk = startOfWeekSunday();
-    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
+    var wk = startOfWeekMonday();
+    var inWeek = workouts.filter(function (w) { return w.date >= wk; });
     var byDate = new Map();
     inWeek.forEach(function (w) {
       var list = byDate.get(w.date) || [];
@@ -1141,8 +1165,8 @@ function Datum() {
   }, [weekBarData, weekWorkoutsByDay]);
 
   var workoutHistoryDays = useMemo(function () {
-    var wk = startOfWeekSunday();
-    var inWeek = workouts.filter(function (w) { return new Date(w.date) >= wk; });
+    var wk = startOfWeekMonday();
+    var inWeek = workouts.filter(function (w) { return w.date >= wk; });
     var byDate = new Map();
     inWeek.forEach(function (w) {
       var entry = byDate.get(w.date) || { date: w.date, caloriesBurned: 0, count: 0 };
@@ -1151,6 +1175,26 @@ function Datum() {
     });
     return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
   }, [workouts]);
+
+  // Any workout that's neither in the current week nor already rolled into a
+  // weekly summary — covers imported/backfilled historical data so it's
+  // always reachable somewhere, even before the next Monday compression runs.
+  var otherWorkoutDays = useMemo(function () {
+    var wk = startOfWeekMonday();
+    var summarizedWeeks = weeklySummaries.map(function (s) { return s.weekKey; });
+    function isSummarized(dk) {
+      var weekOf = startOfWeekMonday(dk);
+      return summarizedWeeks.indexOf(weekOf) >= 0;
+    }
+    var leftover = workouts.filter(function (w) { return w.date < wk && !isSummarized(w.date); });
+    var byDate = new Map();
+    leftover.forEach(function (w) {
+      var entry = byDate.get(w.date) || { date: w.date, caloriesBurned: 0, count: 0 };
+      entry.caloriesBurned += w.caloriesBurned; entry.count += 1;
+      byDate.set(w.date, entry);
+    });
+    return Array.from(byDate.values()).sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  }, [workouts, weeklySummaries]);
 
   function addFood(meal, entry) {
     var now = new Date();
@@ -1288,6 +1332,19 @@ function Datum() {
         );
       })
     ),
+    weeklySummaries.length > 0 ? h("div", { className: "last-week-card" },
+      h("div", { className: "row-between mb-2" },
+        h("span", { className: "eyebrow" }, "LAST WEEK"),
+        h("span", { className: "hint" }, weeklySummaries[weeklySummaries.length - 1].weekKey)
+      ),
+      h("div", { className: "row-between" },
+        h("div", null,
+          h("div", { className: "value-mono" }, weeklySummaries[weeklySummaries.length - 1].workoutCount + " workouts"),
+          h("div", { className: "hint" }, "avg " + weeklySummaries[weeklySummaries.length - 1].avgCalories + " cal/day eaten")
+        ),
+        h("div", { className: "session-cal" }, weeklySummaries[weeklySummaries.length - 1].caloriesBurned + " cal")
+      )
+    ) : null,
     h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-primary" }, "+ Log workout"),
     h("button", { onClick: function () { setWorkoutHistoryOpen(true); }, className: "list-btn" }, "View history")
   );
@@ -1339,7 +1396,7 @@ function Datum() {
     goalModalOpen ? h(Modal, { title: "Edit goals", onClose: function () { setGoalModalOpen(false); } }, h(EditGoalsForm, { goals: goals, unit: unit, onSave: function (g) { setGoals(g); setGoalModalOpen(false); } })) : null,
     calendarOpen ? h(CalendarModal, { selectedDate: selectedDate, onSelect: setSelectedDate, onClose: function () { setCalendarOpen(false); } }) : null,
     foodHistoryOpen ? h(FoodHistoryModal, { days: foodHistoryDays, onClose: function () { setFoodHistoryOpen(false); }, onSelect: function (d) { setSelectedDate(d); setFoodHistoryOpen(false); } }) : null,
-    workoutHistoryOpen ? h(WorkoutHistoryModal, { days: workoutHistoryDays, weeklySummaries: weeklySummaries, onClose: function () { setWorkoutHistoryOpen(false); }, onSelect: function (d) { setSelectedDate(d); setWorkoutHistoryOpen(false); } }) : null,
+    workoutHistoryOpen ? h(WorkoutHistoryModal, { days: workoutHistoryDays, weeklySummaries: weeklySummaries, otherDays: otherWorkoutDays, onClose: function () { setWorkoutHistoryOpen(false); }, onSelect: function (d) { setSelectedDate(d); setWorkoutHistoryOpen(false); } }) : null,
     settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
       h("div", { className: "eyebrow mb-2" }, "GOALS"),
       h("button", { onClick: function () { setSettingsOpen(false); setGoalModalOpen(true); }, className: "list-btn mb-4" }, "Edit weight, calorie & workout goals"),

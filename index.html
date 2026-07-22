@@ -39,15 +39,13 @@ button { cursor: pointer; border: none; background: none; }
 .icon-btn-tiny { width: 22px; height: 22px; border-radius: 6px; border: none; background: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 
 .app-body { flex: 1 1 0%; overflow-y: auto; padding: 14px 16px 16px; -webkit-overflow-scrolling: touch; }
-.app-body-fit { overflow: hidden; display: flex; flex-direction: column; }
-.dashboard-fit { flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0; }
 .col-gap > * + * { margin-top: 10px; }
 
 .row { display: flex; align-items: center; }
 .row-between { display: flex; align-items: center; justify-content: space-between; }
 .gap-2 { gap: 8px; }
 .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; }
-.mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; }
+.mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; }
 
 .eyebrow { font: 600 9px 'JetBrains Mono', monospace; color: var(--subtext); letter-spacing: 0.06em; }
 .value-mono { font: 700 12px 'JetBrains Mono', monospace; color: var(--text); }
@@ -107,6 +105,19 @@ button { cursor: pointer; border: none; background: none; }
 .day-card { text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
 .day-card-name { font: 600 12px 'Inter', sans-serif; color: var(--text); margin: 4px 0; }
 .day-card-cal { font: 700 15px 'JetBrains Mono', monospace; }
+.btn-nutritionist { width: 100%; background: var(--surface); border: 1px solid var(--lime); color: var(--lime); border-radius: 12px; padding: 14px; font: 700 12px 'Inter', sans-serif; text-align: center; }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 7px 12px; font: 600 11px 'Inter', sans-serif; color: var(--text); }
+
+.chat-scroll { max-height: 240px; min-height: 100px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+.chat-bubble-row { display: flex; justify-content: flex-start; }
+.chat-bubble-row-user { justify-content: flex-end; }
+.chat-bubble { max-width: 80%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; font-size: 12px; color: var(--text); line-height: 1.4; }
+.chat-bubble-user { background: var(--lime); color: #0d0d10; border-color: var(--lime); }
+.chat-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 13px; color: var(--text); outline: none; }
+.chat-input:focus { border-color: var(--lime); }
+.chat-input::placeholder { color: var(--subtext); }
 .last-week-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
 
 .weight-log-row-input { display: flex; align-items: stretch; gap: 8px; }
@@ -940,22 +951,94 @@ function WorkoutHistoryModal(props) {
   );
 }
 
+// ---------- AI Nutritionist chat (demo — see disclaimer in the modal itself) ----------
+function stubNutritionistReply(text) {
+  var t = text.toLowerCase();
+  var tip = "General tip: pair a protein source with a fibrous veg and a slow-digesting carb to keep you fuller for longer.";
+  if (t.indexOf("breakfast") >= 0) tip = "For breakfast: eggs + oats + berries is a solid protein/fiber combo to start the day.";
+  else if (t.indexOf("high protein") >= 0 || t.indexOf("protein") >= 0) tip = "High-protein options: chicken breast, Greek yogurt, cottage cheese, lentils, and eggs are all easy to build meals around.";
+  else if (t.indexOf("low carb") >= 0) tip = "Low-carb swaps: cauliflower rice, lettuce wraps instead of bread, and zucchini noodles work well.";
+  else if (t.indexOf("meal prep") >= 0 || t.indexOf("prep") >= 0) tip = "Meal prep idea: cook a big batch of a grain, a protein, and a roasted veg on Sunday, then mix-and-match through the week.";
+  else if (t.indexOf("snack") >= 0) tip = "Snack ideas: Greek yogurt with fruit, a handful of nuts, or hummus with veg sticks.";
+  return "This is a demo response — I'm not connected to a real AI service yet (that needs a backend holding an API key; a static page can't call one directly). " + tip;
+}
+
+function NutritionistModal(props) {
+  var sMessages = useState([
+    { role: "assistant", text: "Hi! I can help with meal ideas from what you have on hand, meal prep planning, and general nutrition questions. (Demo mode — see note below.)" }
+  ]);
+  var messages = sMessages[0], setMessages = sMessages[1];
+  var sInput = useState(""), input = sInput[0], setInput = sInput[1];
+  var sThinking = useState(false), thinking = sThinking[0], setThinking = sThinking[1];
+  var scrollRef = useRef(null);
+
+  useEffect(function () {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, thinking]);
+
+  function send(text) {
+    var msg = (text != null ? text : input).trim();
+    if (!msg) return;
+    setMessages(function (prev) { return prev.concat([{ role: "user", text: msg }]); });
+    setInput("");
+    setThinking(true);
+    setTimeout(function () {
+      setMessages(function (prev) { return prev.concat([{ role: "assistant", text: stubNutritionistReply(msg) }]); });
+      setThinking(false);
+    }, 500);
+  }
+
+  return h(Modal, { title: "AI Nutritionist", onClose: props.onClose },
+    (props.frequentFoods.length > 0 || props.recentFoods.length > 0) ? h("div", { className: "mb-3" },
+      props.frequentFoods.length > 0 ? h("div", null,
+        h("div", { className: "eyebrow mb-2" }, "FREQUENTLY USED"),
+        h("div", { className: "chip-row mb-3" },
+          props.frequentFoods.map(function (f) {
+            return h("button", { key: f, onClick: function () { send("What can I make with " + f + "?"); }, className: "chip" }, f);
+          })
+        )
+      ) : null,
+      props.recentFoods.length > 0 ? h("div", null,
+        h("div", { className: "eyebrow mb-2" }, "RECENTLY ADDED"),
+        h("div", { className: "chip-row" },
+          props.recentFoods.map(function (f) {
+            return h("button", { key: f, onClick: function () { send("What can I make with " + f + "?"); }, className: "chip" }, f);
+          })
+        )
+      ) : null
+    ) : null,
+
+    h("div", { className: "chat-scroll", ref: scrollRef },
+      messages.map(function (m, i) {
+        return h("div", { key: i, className: "chat-bubble-row" + (m.role === "user" ? " chat-bubble-row-user" : "") },
+          h("div", { className: "chat-bubble" + (m.role === "user" ? " chat-bubble-user" : "") }, m.text)
+        );
+      }),
+      thinking ? h("div", { className: "chat-bubble-row" }, h("div", { className: "chat-bubble scanning-text" }, "…")) : null
+    ),
+
+    h("div", { className: "row gap-2 mt-3" },
+      h("input", {
+        value: input, onChange: function (e) { setInput(e.target.value); },
+        onKeyDown: function (e) { if (e.key === "Enter") send(); },
+        placeholder: "Ask about meals, pantry items, nutrition…", className: "chat-input"
+      }),
+      h("button", { onClick: function () { send(); }, className: "log-btn" }, "Send")
+    ),
+    h("p", { className: "hint mt-3" }, "Demo mode: responses are canned, not a real AI. Connecting this to a real assistant needs a backend service holding an API key.")
+  );
+}
+
 function WeekBarChart(props) {
   // props.days: array of 7 entries (Mon..Sun) { date, calories, isToday, hasWorkout }
   var workoutCals = props.days.filter(function (d) { return d.hasWorkout; }).map(function (d) { return d.calories; });
   var maxCal = workoutCals.length ? Math.max.apply(null, workoutCals) : 1;
-  var minCal = workoutCals.length ? Math.min.apply(null, workoutCals) : 0;
-  var span = maxCal - minCal;
   return h("div", { className: "week-bars" },
     props.days.map(function (d) {
-      var pct;
-      if (!d.hasWorkout) {
-        pct = 6; // flat baseline sliver for days with no workout
-      } else if (span === 0) {
-        pct = 100; // every workout day burned the same — all bars full
-      } else {
-        pct = 12 + ((d.calories - minCal) / span) * 88; // true relative scaling, highest = 100%, lowest = 12%
-      }
+      // Proportional to the actual calorie value relative to the week's highest
+      // day — e.g. a 400-cal day genuinely renders shorter than a 500-cal day,
+      // not stretched between an arbitrary min/max range.
+      var pct = d.hasWorkout ? Math.max(8, (d.calories / maxCal) * 100) : 6;
       var color = d.isToday ? "var(--lime)" : (d.hasWorkout ? "var(--cyan)" : "var(--border)");
       return h("div", { key: d.date, className: "week-bar-col" },
         h("div", { className: "week-bar", style: { height: pct + "%", background: color } })
@@ -1021,9 +1104,11 @@ function Datum() {
   var sSettingsOpen = useState(false), settingsOpen = sSettingsOpen[0], setSettingsOpen = sSettingsOpen[1];
   var sFoodHistoryOpen = useState(false), foodHistoryOpen = sFoodHistoryOpen[0], setFoodHistoryOpen = sFoodHistoryOpen[1];
   var sWorkoutHistoryOpen = useState(false), workoutHistoryOpen = sWorkoutHistoryOpen[0], setWorkoutHistoryOpen = sWorkoutHistoryOpen[1];
+  var sNutritionistOpen = useState(false), nutritionistOpen = sNutritionistOpen[0], setNutritionistOpen = sNutritionistOpen[1];
   var sWeightInput = useState(""), weightInput = sWeightInput[0], setWeightInput = sWeightInput[1];
   var sImportMsg = useState(""), importMessage = sImportMsg[0], setImportMessage = sImportMsg[1];
   var fileInputRef = useRef(null);
+  var appBodyRef = useRef(null);
 
   useEffect(function () { saveKey("theme", theme); }, [theme]);
   useEffect(function () { saveKey("foodEntries", foodEntries); }, [foodEntries]);
@@ -1033,6 +1118,7 @@ function Datum() {
   useEffect(function () { saveKey("monthlySummaries", monthlySummaries); }, [monthlySummaries]);
   useEffect(function () { saveKey("goals", goals); }, [goals]);
   useEffect(function () { saveKey("unit", unit); }, [unit]);
+  useEffect(function () { if (appBodyRef.current) appBodyRef.current.scrollTop = 0; }, [tab, selectedDate]);
 
   function aggregate(entries, wos) {
     var totals = entries.reduce(function (a, e) {
@@ -1106,6 +1192,23 @@ function Datum() {
     var byName = new Map();
     foodEntries.forEach(function (e) { byName.set(e.name, e); });
     return Array.from(byName.values()).reverse().slice(0, 20);
+  }, [foodEntries]);
+
+  var pantryFoods = useMemo(function () {
+    var stats = new Map(); // name -> { count, lastTimestamp }
+    foodEntries.forEach(function (e) {
+      var s = stats.get(e.name) || { count: 0, lastTimestamp: 0 };
+      s.count += 1;
+      s.lastTimestamp = Math.max(s.lastTimestamp, e.timestamp || 0);
+      stats.set(e.name, s);
+    });
+    var all = Array.from(stats.entries()).map(function (pair) { return { name: pair[0], count: pair[1].count, lastTimestamp: pair[1].lastTimestamp }; });
+    var frequent = all.filter(function (f) { return f.count >= 2; })
+      .sort(function (a, b) { return b.count - a.count || b.lastTimestamp - a.lastTimestamp; }).slice(0, 6).map(function (f) { return f.name; });
+    var frequentSet = new Set(frequent);
+    var recent = all.slice().sort(function (a, b) { return b.lastTimestamp - a.lastTimestamp; })
+      .filter(function (f) { return !frequentSet.has(f.name); }).slice(0, 6).map(function (f) { return f.name; });
+    return { frequent: frequent, recent: recent };
   }, [foodEntries]);
 
   var knownWorkouts = useMemo(function () {
@@ -1272,7 +1375,7 @@ function Datum() {
     )
   );
 
-  var dashboardBody = tab !== "dashboard" ? null : h("div", { className: "col-gap dashboard-fit" },
+  var dashboardBody = tab !== "dashboard" ? null : h("div", { className: "col-gap" },
     h(WeightGoalBar, { goals: goals, unit: unit, currentWeightKg: currentWeightKg, startWeightKg: startWeightKg }),
     h(CalorieCard, {
       current: totals.calories, goal: goals.calorieGoal, label: "CALORIES",
@@ -1291,7 +1394,8 @@ function Datum() {
     h("div", { className: "row gap-2" },
       h("button", { onClick: function () { setFoodModalOpen(true); }, className: "btn-primary" }, "+ Food"),
       h("button", { onClick: function () { setWorkoutModal(true); }, className: "btn-secondary" }, "+ Train")
-    )
+    ),
+    h("button", { onClick: function () { setNutritionistOpen(true); }, className: "btn-nutritionist" }, "🥗 AI Nutritionist")
   );
 
   var foodBody = tab !== "food" ? null : h("div", { className: "col-gap" },
@@ -1385,7 +1489,7 @@ function Datum() {
 
   return h("div", { className: "app-shell" + (theme === "light" ? " theme-light" : ""), style: setCssVars(p) },
     header,
-    h("div", { className: "app-body" + (tab === "dashboard" ? " app-body-fit" : "") },
+    h("div", { className: "app-body", ref: appBodyRef },
       h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
       dashboardBody, foodBody, workoutsBody, weightBody
     ),
@@ -1397,6 +1501,7 @@ function Datum() {
     calendarOpen ? h(CalendarModal, { selectedDate: selectedDate, onSelect: setSelectedDate, onClose: function () { setCalendarOpen(false); } }) : null,
     foodHistoryOpen ? h(FoodHistoryModal, { days: foodHistoryDays, onClose: function () { setFoodHistoryOpen(false); }, onSelect: function (d) { setSelectedDate(d); setFoodHistoryOpen(false); } }) : null,
     workoutHistoryOpen ? h(WorkoutHistoryModal, { days: workoutHistoryDays, weeklySummaries: weeklySummaries, otherDays: otherWorkoutDays, onClose: function () { setWorkoutHistoryOpen(false); }, onSelect: function (d) { setSelectedDate(d); setWorkoutHistoryOpen(false); } }) : null,
+    nutritionistOpen ? h(NutritionistModal, { frequentFoods: pantryFoods.frequent, recentFoods: pantryFoods.recent, onClose: function () { setNutritionistOpen(false); } }) : null,
     settingsOpen ? h(Modal, { title: "Settings", onClose: function () { setSettingsOpen(false); } },
       h("div", { className: "eyebrow mb-2" }, "GOALS"),
       h("button", { onClick: function () { setSettingsOpen(false); setGoalModalOpen(true); }, className: "list-btn mb-4" }, "Edit weight, calorie & workout goals"),

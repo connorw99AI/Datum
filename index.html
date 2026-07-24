@@ -60,6 +60,7 @@ button { cursor: pointer; border: none; background: none; }
 .date-nav-arrow { font: 700 20px 'Inter', sans-serif; color: var(--lime); padding: 0 6px; }
 .date-nav-arrow:disabled { color: var(--border); cursor: default; }
 .date-nav-label { font: 700 22px 'Inter', sans-serif; color: var(--text); line-height: 1; }
+.week-nav-label { font-size: 16px; }
 
 .goal-bar-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
 
@@ -168,6 +169,10 @@ button { cursor: pointer; border: none; background: none; }
 
 .field-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--subtext); font-weight: 600; }
 .field-input { width: 100%; background: #fff; border: 2px solid #d4d4d8; border-radius: 10px; padding: 10px 12px; font-size: 15px; color: #000; font-weight: 500; outline: none; margin-top: 4px; }
+.suggest-wrap { position: relative; }
+.suggest-list { position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; max-height: 220px; overflow-y: auto; z-index: 20; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.suggest-item { width: 100%; text-align: left; padding: 10px 12px; border-top: 1px solid var(--border); }
+.suggest-item:first-child { border-top: none; }
 .field-input:focus { border-color: var(--lime); }
 .field-input::placeholder { color: #a1a1aa; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -368,7 +373,7 @@ function fmtDelta(kgDelta, unit) {
   return sign + lbs.toFixed(1);
 }
 
-var MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
+var MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks", "Drinks"];
 
 function Icon(glyph, size, className) {
   return h("span", { style: { fontSize: size || 16, lineHeight: 1, display: "inline-flex" }, className: className || "" }, glyph);
@@ -495,6 +500,22 @@ function DateNav(props) {
   );
 }
 
+function WeekNav(props) {
+  var weekStart = props.weekStart, onChange = props.onChange;
+  var currentWeek = startOfWeekMonday();
+  var atCurrentWeek = weekStart >= currentWeek;
+  var weekEnd = addDays(weekStart, 6);
+  var label = weekStart === currentWeek ? "This week" : (formatShortDate(weekStart).slice(0, 6) + " – " + formatShortDate(weekEnd).slice(0, 6));
+  return h("div", { className: "date-nav" },
+    h("button", { onClick: function () { onChange(addDays(weekStart, -7)); }, className: "date-nav-arrow" }, "‹"),
+    h("span", { className: "date-nav-label week-nav-label" }, label),
+    h("button", {
+      onClick: function () { if (!atCurrentWeek) onChange(addDays(weekStart, 7)); },
+      disabled: atCurrentWeek, className: "date-nav-arrow"
+    }, "›")
+  );
+}
+
 function WeightGoalBar(props) {
   var goals = props.goals, unit = props.unit, currentWeightKg = props.currentWeightKg, startWeightKg = props.startWeightKg;
   var hasData = startWeightKg != null && currentWeightKg != null;
@@ -572,6 +593,48 @@ function WeightTrendChart(props) {
     )
   );
 }
+// Custom substring-match suggestion dropdown for the food name field. Native
+// <datalist> is unreliable across browsers (especially Safari, which often
+// won't show suggestions at all) and typically only prefix-matches — this
+// guarantees consistent behavior and matches anywhere in the name, not just
+// the start (e.g. typing "mon" surfaces "Monster Munch" and "Monster Ultra";
+// typing "500ml" surfaces "Monster Energy Ultra 500ml").
+function NameFieldWithSuggestions(props) {
+  var name = props.name, setName = props.setName, knownFoods = props.knownFoods, fillFrom = props.fillFrom, entryMode = props.entryMode;
+  var sFocused = useState(false), focused = sFocused[0], setFocused = sFocused[1];
+
+  var query = name.trim().toLowerCase();
+  var suggestions = query.length === 0 ? [] : knownFoods.filter(function (f) {
+    return f.name.toLowerCase().indexOf(query) >= 0;
+  }).slice(0, 8);
+
+  function pick(food) {
+    if (entryMode === "Total") fillFrom(food);
+    else setName(food.name);
+    setFocused(false);
+  }
+
+  return h("div", { className: "mb-3 suggest-wrap" },
+    h("label", { className: "field-label" }, "Food name"),
+    h("input", {
+      value: name,
+      onChange: function (e) { setName(e.target.value); },
+      onFocus: function () { setFocused(true); },
+      onBlur: function () { setTimeout(function () { setFocused(false); }, 150); }, // allow click on a suggestion to register first
+      placeholder: "e.g. Grilled chicken",
+      className: "field-input"
+    }),
+    (focused && suggestions.length > 0) ? h("div", { className: "suggest-list" },
+      suggestions.map(function (f) {
+        return h("button", { key: f.name, onMouseDown: function (e) { e.preventDefault(); pick(f); }, className: "suggest-item" },
+          h("div", { className: "quick-item-title" }, f.name),
+          h("div", { className: "quick-item-sub" }, f.calories + " cal · P " + f.protein + "g · C " + f.carbs + "g · F " + f.fat + "g")
+        );
+      })
+    ) : null
+  );
+}
+
 function AddFoodFlow(props) {
   var knownFoods = props.knownFoods;
   var sMeal = useState(null), meal = sMeal[0], setMeal = sMeal[1];
@@ -743,10 +806,12 @@ function AddFoodFlow(props) {
 
   if (!meal) {
     return h("div", null,
-      h("p", { className: "hint" }, "Which meal is this for?"),
-      MEALS.map(function (m) {
-        return h("button", { key: m, onClick: function () { setMeal(m); }, className: "list-btn" }, m);
-      })
+      h("p", { className: "hint mb-2" }, "Which meal is this for?"),
+      h("div", { className: "col-gap" },
+        MEALS.map(function (m) {
+          return h("button", { key: m, onClick: function () { setMeal(m); }, className: "list-btn" }, m);
+        })
+      )
     );
   }
 
@@ -790,23 +855,10 @@ function AddFoodFlow(props) {
       ) : null
     ) : null,
 
+    mode === "Manual" ? h(NameFieldWithSuggestions, {
+      name: name, setName: setName, knownFoods: knownFoods, fillFrom: fillFrom, entryMode: entryMode
+    }) : null,
     mode === "Manual" ? h("div", null,
-      h(Field, {
-        label: "Food name", value: name, list: "known-foods-list",
-        onChange: function (e) {
-          var v = e.target.value;
-          setName(v);
-          if (entryMode === "Total") {
-            var match = knownFoods.filter(function (f) { return f.name.toLowerCase() === v.toLowerCase(); })[0];
-            if (match) fillFrom(match);
-            else setName(v); // fillFrom already sets name; keep typed text if no exact match
-          }
-        },
-        placeholder: "e.g. Grilled chicken"
-      }),
-      h("datalist", { id: "known-foods-list" },
-        knownFoods.map(function (f) { return h("option", { key: f.name, value: f.name }); })
-      ),
       h(Segmented, { options: ["Total", "Per 100g"], value: entryMode, onChange: setEntryMode }),
 
       entryMode === "Total" ? h("div", null,
@@ -1097,6 +1149,7 @@ function Datum() {
   var lastMonthChecked = useRef(loadKey("lastMonthSummarized", null));
 
   var sSelectedDate = useState(function () { return dateKey(); }), selectedDate = sSelectedDate[0], setSelectedDate = sSelectedDate[1];
+  var sViewedWeekStart = useState(function () { return startOfWeekMonday(); }), viewedWeekStart = sViewedWeekStart[0], setViewedWeekStart = sViewedWeekStart[1];
   var sFoodModal = useState(false), foodModalOpen = sFoodModal[0], setFoodModalOpen = sFoodModal[1];
   var sWorkoutModal = useState(false), workoutModal = sWorkoutModal[0], setWorkoutModal = sWorkoutModal[1];
   var sGoalModal = useState(false), goalModalOpen = sGoalModal[0], setGoalModalOpen = sGoalModal[1];
@@ -1118,7 +1171,7 @@ function Datum() {
   useEffect(function () { saveKey("monthlySummaries", monthlySummaries); }, [monthlySummaries]);
   useEffect(function () { saveKey("goals", goals); }, [goals]);
   useEffect(function () { saveKey("unit", unit); }, [unit]);
-  useEffect(function () { if (appBodyRef.current) appBodyRef.current.scrollTop = 0; }, [tab, selectedDate]);
+  useEffect(function () { if (appBodyRef.current) appBodyRef.current.scrollTop = 0; }, [tab, selectedDate, viewedWeekStart]);
 
   function aggregate(entries, wos) {
     var totals = entries.reduce(function (a, e) {
@@ -1189,9 +1242,17 @@ function Datum() {
   }, [foodEntries]);
 
   var knownFoods = useMemo(function () {
-    var byName = new Map();
-    foodEntries.forEach(function (e) { byName.set(e.name, e); });
-    return Array.from(byName.values()).reverse().slice(0, 20);
+    var stats = new Map(); // name -> { entry, count, lastTimestamp }
+    foodEntries.forEach(function (e) {
+      var s = stats.get(e.name) || { entry: e, count: 0, lastTimestamp: 0 };
+      s.count += 1;
+      if ((e.timestamp || 0) >= s.lastTimestamp) { s.entry = e; s.lastTimestamp = e.timestamp || 0; }
+      stats.set(e.name, s);
+    });
+    return Array.from(stats.values())
+      .sort(function (a, b) { return b.count - a.count || b.lastTimestamp - a.lastTimestamp; })
+      .slice(0, 20)
+      .map(function (s) { return s.entry; });
   }, [foodEntries]);
 
   var pantryFoods = useMemo(function () {
@@ -1229,8 +1290,8 @@ function Datum() {
   }, [workouts]);
 
   var weekWorkoutsByDay = useMemo(function () {
-    var wk = startOfWeekMonday();
-    var inWeek = workouts.filter(function (w) { return w.date >= wk; });
+    var weekEnd = addDays(viewedWeekStart, 6);
+    var inWeek = workouts.filter(function (w) { return w.date >= viewedWeekStart && w.date <= weekEnd; });
     var byDate = new Map();
     inWeek.forEach(function (w) {
       var list = byDate.get(w.date) || [];
@@ -1238,13 +1299,12 @@ function Datum() {
       byDate.set(w.date, list);
     });
     return byDate;
-  }, [workouts]);
+  }, [workouts, viewedWeekStart]);
 
   var weekBarData = useMemo(function () {
-    var mon = mondayOfThisWeek();
     var out = [];
     for (var i = 0; i < 7; i++) {
-      var dk = addDays(mon, i);
+      var dk = addDays(viewedWeekStart, i);
       var items = weekWorkoutsByDay.get(dk) || [];
       out.push({
         date: dk,
@@ -1254,7 +1314,7 @@ function Datum() {
       });
     }
     return out;
-  }, [weekWorkoutsByDay, today]);
+  }, [weekWorkoutsByDay, today, viewedWeekStart]);
 
   var weekDayCards = useMemo(function () {
     return weekBarData.filter(function (d) { return d.hasWorkout; }).map(function (d) {
@@ -1490,7 +1550,8 @@ function Datum() {
   return h("div", { className: "app-shell" + (theme === "light" ? " theme-light" : ""), style: setCssVars(p) },
     header,
     h("div", { className: "app-body", ref: appBodyRef },
-      h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }),
+      (tab === "dashboard" || tab === "food") ? h(DateNav, { selectedDate: selectedDate, onChange: setSelectedDate }) : null,
+      tab === "workouts" ? h(WeekNav, { weekStart: viewedWeekStart, onChange: setViewedWeekStart }) : null,
       dashboardBody, foodBody, workoutsBody, weightBody
     ),
     pillNav,
